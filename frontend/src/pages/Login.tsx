@@ -22,7 +22,7 @@ export function Login() {
         password,
       });
       login(res.token, res.user);
-      navigate("/agenda");
+      navigate("/dashboard");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Erro ao entrar");
     } finally {

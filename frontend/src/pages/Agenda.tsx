@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api, ApiError } from "../api";
-import { useAuth } from "../context/AuthContext";
+import { Layout } from "../components/Layout";
 
 interface Appointment {
   id: string;
@@ -21,7 +21,6 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export function Agenda() {
-  const { user, logout } = useAuth();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,13 +48,10 @@ export function Agenda() {
   }
 
   return (
+    <Layout>
     <div className="agenda-page">
       <header>
         <h1>Agenda de hoje</h1>
-        <div>
-          <span>{user?.name}</span>
-          <button onClick={logout}>Sair</button>
-        </div>
       </header>
 
       {loading && <p>Carregando...</p>}
@@ -89,5 +85,6 @@ export function Agenda() {
         ))}
       </ul>
     </div>
+    </Layout>
   );
 }

@@ -21,14 +21,62 @@ enum AppointmentStatus {
   NO_SHOW
 }
 
+enum DocumentKind {
+  ATESTADO
+  RECEITA
+  DIAGNOSTICO
+  RECIBO
+  OUTRO
+}
+
+enum DocumentStatus {
+  PENDING
+  DONE
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum RecurrencePeriod {
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum InvoiceStatus {
+  PENDING
+  ISSUED
+  CANCELLED
+}
+
 // Tenant: uma clínica/consultório. Todo dado clínico é isolado por clinicId.
 model Clinic {
   id           String        @id @default(cuid())
   name         String
+  email        String?
+  phone        String?
+  logoUrl      String?
+  planName     String        @default("Gratuito")
+  planStatus   String        @default("active")
+  planRenewsAt DateTime?
   createdAt    DateTime      @default(now())
-  users        User[]
-  patients     Patient[]
-  appointments Appointment[]
+  users             User[]
+  patients          Patient[]
+  appointments      Appointment[]
+  invoices          Invoice[]
+  documentTemplates DocumentTemplate[]
+  documents         PatientDocument[]
+  financeCategories   FinanceCategory[]
+  financeRecurrences  FinanceRecurrence[]
+  financeTransactions FinanceTransaction[]
 }
 
 model User {
@@ -39,8 +87,15 @@ model User {
   email        String        @unique
   passwordHash String
   role         UserRole      @default(DOCTOR)
+  photoUrl     String?
+  cpf          String?       @unique
+  crm          String?
+  specialties  String?
+  signatureUrl String?
   createdAt    DateTime      @default(now())
   appointments Appointment[] @relation("DoctorAppointments")
+  documents    PatientDocument[] @relation("DoctorDocuments")
+  financeTransactions FinanceTransaction[] @relation("DoctorTransactions")
 
   @@index([clinicId])
 }
@@ -56,6 +111,9 @@ model Patient {
   notes        String?
   createdAt    DateTime      @default(now())
   appointments Appointment[]
+  documents    PatientDocument[]
+  financeTransactions FinanceTransaction[]
+  invoices     Invoice[]
 
   @@index([clinicId])
 }
@@ -73,6 +131,130 @@ model Appointment {
   status    AppointmentStatus @default(SCHEDULED)
   notes     String?
   createdAt DateTime          @default(now())
+  documents PatientDocument[]
+  financeTransactions FinanceTransaction[]
 
   @@index([clinicId, startsAt])
+}
+
+// Nota fiscal de serviço (NFSe) emitida pela clínica.
+model Invoice {
+  id          String        @id @default(cuid())
+  clinicId    String
+  clinic      Clinic        @relation(fields: [clinicId], references: [id])
+  patientId   String?
+  patient     Patient?      @relation(fields: [patientId], references: [id])
+  number      String
+  description String?
+  amount      Float
+  status      InvoiceStatus @default(PENDING)
+  issueDate   DateTime
+  createdAt   DateTime      @default(now())
+
+  @@index([clinicId])
+}
+
+// Modelo de documento (atestado, receita, diagnóstico ou recibo).
+// clinicId nulo = template padrão do sistema, disponível para todas as clínicas.
+model DocumentTemplate {
+  id        String       @id @default(cuid())
+  clinicId  String?
+  clinic    Clinic?      @relation(fields: [clinicId], references: [id])
+  kind      DocumentKind
+  name      String
+  content   String?
+  fileUrl   String?
+  createdAt DateTime     @default(now())
+
+  documents PatientDocument[]
+
+  @@index([clinicId])
+}
+
+// Documento emitido para um paciente (a partir de um template ou em branco),
+// opcionalmente vinculado a uma consulta. RECIBO usa `status` como fluxo
+// "a fazer" (PENDING) / "concluído" (DONE).
+model PatientDocument {
+  id            String           @id @default(cuid())
+  clinicId      String
+  clinic        Clinic           @relation(fields: [clinicId], references: [id])
+  templateId    String?
+  template      DocumentTemplate? @relation(fields: [templateId], references: [id])
+  kind          DocumentKind
+  patientId     String
+  patient       Patient          @relation(fields: [patientId], references: [id])
+  appointmentId String?
+  appointment   Appointment?     @relation(fields: [appointmentId], references: [id])
+  doctorId      String
+  doctor        User             @relation("DoctorDocuments", fields: [doctorId], references: [id])
+  title         String
+  content       String
+  amount        Float?
+  status        DocumentStatus   @default(DONE)
+  createdAt     DateTime         @default(now())
+
+  @@index([clinicId])
+  @@index([patientId])
+}
+
+// Categoria de receita ou despesa, personalizável por clínica.
+model FinanceCategory {
+  id        String          @id @default(cuid())
+  clinicId  String
+  clinic    Clinic          @relation(fields: [clinicId], references: [id])
+  type      TransactionType
+  name      String
+  createdAt DateTime        @default(now())
+
+  transactions FinanceTransaction[]
+  recurrences  FinanceRecurrence[]
+
+  @@index([clinicId])
+}
+
+// Lançamento recorrente (valor periódico fixo de entrada ou saída).
+// Gera transações automaticamente a partir de startDate, respeitando period/endDate.
+model FinanceRecurrence {
+  id          String           @id @default(cuid())
+  clinicId    String
+  clinic      Clinic           @relation(fields: [clinicId], references: [id])
+  categoryId  String?
+  category    FinanceCategory? @relation(fields: [categoryId], references: [id])
+  type        TransactionType
+  description String
+  amount      Float
+  period      RecurrencePeriod
+  startDate   DateTime
+  endDate     DateTime?
+  active      Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+
+  transactions FinanceTransaction[]
+
+  @@index([clinicId])
+}
+
+// Movimentação financeira (entrada ou saída) da clínica.
+model FinanceTransaction {
+  id            String             @id @default(cuid())
+  clinicId      String
+  clinic        Clinic             @relation(fields: [clinicId], references: [id])
+  type          TransactionType
+  status        TransactionStatus  @default(PENDING)
+  categoryId    String?
+  category      FinanceCategory?   @relation(fields: [categoryId], references: [id])
+  patientId     String?
+  patient       Patient?           @relation(fields: [patientId], references: [id])
+  doctorId      String?
+  doctor        User?              @relation("DoctorTransactions", fields: [doctorId], references: [id])
+  appointmentId String?
+  appointment   Appointment?       @relation(fields: [appointmentId], references: [id])
+  recurrenceId  String?
+  recurrence    FinanceRecurrence? @relation(fields: [recurrenceId], references: [id])
+  description   String
+  amount        Float
+  date          DateTime
+  createdAt     DateTime           @default(now())
+
+  @@index([clinicId, date])
 }
