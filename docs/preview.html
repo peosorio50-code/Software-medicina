@@ -1,0 +1,744 @@
+<title>Meu Consultório</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F1F4F1;
+    --surface: #FFFFFF;
+    --surface-alt: #E7EEE9;
+    --ink: #17221E;
+    --ink-soft: #57655F;
+    --ink-faint: #85938C;
+    --line: #DCE4DE;
+    --accent: #285C4F;
+    --accent-strong: #1D4438;
+    --accent-contrast: #F1F4F1;
+    --amber: #93662A;
+    --amber-bg: #F3E8D4;
+    --rust: #93392F;
+    --rust-bg: #F3DFDA;
+    --sky: #2E5578;
+    --sky-bg: #DEE7EF;
+    --sage: #2F6E52;
+    --sage-bg: #DCEBE1;
+    --shadow: 0 1px 2px rgba(23, 34, 30, 0.06), 0 8px 24px -12px rgba(23, 34, 30, 0.18);
+
+    --sidebar-bg: #12211C;
+    --sidebar-ink: #DCE8E2;
+    --sidebar-ink-soft: #8FA79C;
+    --sidebar-line: #223832;
+    --sidebar-active: #1C332B;
+    --sidebar-accent: #6FBFA2;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10130F;
+      --surface: #191E19;
+      --surface-alt: #1F2721;
+      --ink: #E7EEE9;
+      --ink-soft: #A2B0A8;
+      --ink-faint: #6E7B73;
+      --line: #2B342E;
+      --accent: #6FBFA2;
+      --accent-strong: #8ED2B8;
+      --accent-contrast: #0C1310;
+      --amber: #E0B67C;
+      --amber-bg: #382C1A;
+      --rust: #E29A8E;
+      --rust-bg: #3A2320;
+      --sky: #9CC2E4;
+      --sky-bg: #1F2E3B;
+      --sage: #8ED2B8;
+      --sage-bg: #1B3327;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 28px -12px rgba(0, 0, 0, 0.55);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #10130F;
+    --surface: #191E19;
+    --surface-alt: #1F2721;
+    --ink: #E7EEE9;
+    --ink-soft: #A2B0A8;
+    --ink-faint: #6E7B73;
+    --line: #2B342E;
+    --accent: #6FBFA2;
+    --accent-strong: #8ED2B8;
+    --accent-contrast: #0C1310;
+    --amber: #E0B67C;
+    --amber-bg: #382C1A;
+    --rust: #E29A8E;
+    --rust-bg: #3A2320;
+    --sky: #9CC2E4;
+    --sky-bg: #1F2E3B;
+    --sage: #8ED2B8;
+    --sage-bg: #1B3327;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 28px -12px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .display {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .mono, .time, .stat-value {
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  button { font-family: inherit; }
+
+  a { color: inherit; }
+
+  ::selection { background: var(--accent); color: var(--accent-contrast); }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Draft banner ---------- */
+  .draft-banner {
+    background: var(--accent-strong);
+    color: var(--accent-contrast);
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 0.45rem 1rem;
+    letter-spacing: 0.02em;
+  }
+
+  /* ---------- Login screen ---------- */
+  #login-screen {
+    min-height: calc(100vh - 34px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 2.25rem 2rem;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    display: grid;
+    place-items: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+  }
+
+  .brand-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.15rem;
+  }
+
+  .login-card h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.35rem; }
+  .login-sub { color: var(--ink-soft); font-size: 0.92rem; margin: 0 0 1.75rem; }
+
+  .field { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.1rem; }
+  .field label { font-size: 0.82rem; font-weight: 500; color: var(--ink-soft); }
+  .field input {
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 0.6rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .field input:focus-visible { outline-offset: 0; }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.4rem;
+  }
+  .btn-primary:hover { background: var(--accent-strong); }
+
+  .login-foot {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-top: 1.4rem;
+  }
+  .login-foot a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .login-foot a:hover { text-decoration: underline; }
+
+  /* ---------- App shell ---------- */
+  #app-shell { display: none; min-height: calc(100vh - 34px); }
+  #app-shell.active { display: grid; grid-template-columns: 232px 1fr; }
+
+  .sidebar {
+    background: var(--sidebar-bg);
+    color: var(--sidebar-ink);
+    padding: 1.4rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .sidebar .brand-name { color: var(--sidebar-ink); }
+
+  .nav-group { display: flex; flex-direction: column; gap: 0.15rem; }
+  .nav-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--sidebar-ink-soft);
+    padding: 0 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.6rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--sidebar-ink-soft);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+  }
+  .nav-item:hover { background: var(--sidebar-active); color: var(--sidebar-ink); }
+  .nav-item.active { background: var(--sidebar-active); color: var(--sidebar-ink); }
+  .nav-item.active .nav-dot { background: var(--sidebar-accent); }
+  .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sidebar-ink-soft); flex-shrink: 0; }
+  .nav-item .soon {
+    margin-left: auto;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--sidebar-ink-soft);
+    border: 1px solid var(--sidebar-line);
+    border-radius: 999px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  .sidebar-foot {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--sidebar-line);
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--sage-bg); color: var(--accent-strong);
+    display: grid; place-items: center;
+    font-weight: 600; font-size: 0.85rem; flex-shrink: 0;
+  }
+  .sidebar-foot .who { font-size: 0.83rem; font-weight: 500; }
+  .sidebar-foot .role { font-size: 0.75rem; color: var(--sidebar-ink-soft); }
+
+  .main { padding: 1.75rem 2.25rem 3rem; max-width: 1080px; }
+
+  .topbar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .topbar h1 { font-size: 1.65rem; font-weight: 600; }
+  .topbar .sub { color: var(--ink-soft); font-size: 0.92rem; }
+  .today-pill {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    background: var(--surface-alt);
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem;
+  }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ---------- Stat tiles ---------- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.9rem;
+    margin-bottom: 1.75rem;
+  }
+  .stat-tile {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+  }
+  .stat-tile .stat-label { font-size: 0.78rem; color: var(--ink-soft); margin-bottom: 0.4rem; }
+  .stat-tile .stat-value { font-size: 1.6rem; font-weight: 600; }
+  .stat-tile .stat-value.accent { color: var(--accent); }
+
+  /* ---------- Panels ---------- */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.3rem 0.9rem;
+    border-bottom: 1px solid var(--line);
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .panel-head h2 { font-size: 1.1rem; font-weight: 600; }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.4rem 0.7rem;
+    min-width: 220px;
+  }
+  .search-box input {
+    border: none; background: none; font-family: inherit; font-size: 0.88rem;
+    color: var(--ink); width: 100%; outline: none;
+  }
+  .search-box svg { flex-shrink: 0; color: var(--ink-faint); }
+
+  /* ---------- Agenda list ---------- */
+  .agenda-list { list-style: none; margin: 0; padding: 0; }
+  .agenda-row {
+    display: grid;
+    grid-template-columns: 78px 1fr auto auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.3rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .agenda-row:last-child { border-bottom: none; }
+  .agenda-row .time { font-size: 0.92rem; font-weight: 600; color: var(--ink); }
+  .agenda-row .time span { display: block; font-size: 0.72rem; font-weight: 400; color: var(--ink-faint); }
+  .who-name { font-weight: 600; font-size: 0.94rem; }
+  .who-meta { font-size: 0.8rem; color: var(--ink-soft); margin-top: 0.15rem; }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 0.28rem 0.65rem;
+    border-radius: 999px;
+    cursor: pointer;
+    border: none;
+    white-space: nowrap;
+  }
+  .chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .chip.confirmada { background: var(--sage-bg); color: var(--sage); }
+  .chip.agendada { background: var(--sky-bg); color: var(--sky); }
+  .chip.concluida { background: var(--surface-alt); color: var(--ink-soft); }
+  .chip.cancelada { background: var(--rust-bg); color: var(--rust); }
+  .chip.faltou { background: var(--amber-bg); color: var(--amber); }
+
+  .row-actions { display: flex; gap: 0.4rem; }
+  .icon-btn {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-soft);
+    display: grid; place-items: center;
+    cursor: pointer;
+  }
+  .icon-btn:hover { background: var(--surface-alt); color: var(--ink); }
+
+  .btn-new {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border: none;
+    border-radius: 8px;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.86rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn-new:hover { background: var(--accent-strong); }
+
+  /* ---------- Patients table ---------- */
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: left;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0.8rem 1.3rem;
+    border-bottom: 1px solid var(--line);
+  }
+  tbody td {
+    padding: 0.85rem 1.3rem;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.9rem;
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-alt); }
+  .patient-name { font-weight: 600; }
+  .patient-sub { color: var(--ink-soft); font-size: 0.8rem; margin-top: 0.1rem; }
+  .status-dot { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; }
+  .status-dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; }
+  .status-dot.ativo { color: var(--sage); }
+  .status-dot.ativo::before { background: var(--sage); }
+  .status-dot.inativo { color: var(--ink-faint); }
+  .status-dot.inativo::before { background: var(--ink-faint); }
+  .table-wrap { overflow-x: auto; }
+
+  /* ---------- Placeholder views ---------- */
+  .placeholder {
+    background: var(--surface);
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    color: var(--ink-soft);
+  }
+  .placeholder .ph-icon {
+    width: 46px; height: 46px; border-radius: 12px;
+    background: var(--surface-alt); color: var(--accent);
+    display: grid; place-items: center; margin: 0 auto 1rem;
+  }
+  .placeholder h2 { font-size: 1.15rem; color: var(--ink); margin-bottom: 0.5rem; }
+  .placeholder p { max-width: 380px; margin: 0 auto; font-size: 0.9rem; }
+  .placeholder .soon-badge {
+    display: inline-block; margin-top: 1.1rem;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--ink-soft); border: 1px solid var(--line); border-radius: 999px;
+    padding: 0.25rem 0.7rem;
+  }
+
+  @media (max-width: 860px) {
+    #app-shell.active { grid-template-columns: 1fr; }
+    .sidebar { flex-direction: row; overflow-x: auto; }
+    .nav-group { flex-direction: row; }
+    .nav-label, .sidebar-foot { display: none; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .agenda-row { grid-template-columns: 60px 1fr; row-gap: 0.5rem; }
+    .row-actions { grid-column: 1 / -1; }
+  }
+</style>
+
+<div class="draft-banner">Rascunho visual · dados fictícios para demonstração · sem conexão com banco de dados ainda</div>
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-name">Meu Consultório</div>
+    </div>
+    <h1>Entrar</h1>
+    <p class="login-sub">Organize agenda, pacientes e prontuário em um só lugar.</p>
+    <div class="field">
+      <label for="email">E-mail</label>
+      <input id="email" type="email" value="marina.alencar@clinica.com" />
+    </div>
+    <div class="field">
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" value="••••••••" />
+    </div>
+    <button class="btn-primary" onclick="enterApp()">Entrar</button>
+    <p class="login-foot">Ainda não tem conta? <a href="#" onclick="event.preventDefault()">Cadastre sua clínica</a></p>
+  </div>
+</div>
+
+<div id="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-name">Meu Consultório</div>
+    </div>
+    <nav class="nav-group">
+      <span class="nav-label">Consultório</span>
+      <button class="nav-item active" data-view="agenda" onclick="showView('agenda', this)">
+        <span class="nav-dot"></span> Agenda
+      </button>
+      <button class="nav-item" data-view="pacientes" onclick="showView('pacientes', this)">
+        <span class="nav-dot"></span> Pacientes
+      </button>
+      <button class="nav-item" data-view="prontuario" onclick="showView('prontuario', this)">
+        <span class="nav-dot"></span> Prontuário <span class="soon">em breve</span>
+      </button>
+      <button class="nav-item" data-view="financeiro" onclick="showView('financeiro', this)">
+        <span class="nav-dot"></span> Financeiro <span class="soon">em breve</span>
+      </button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar">MA</div>
+      <div>
+        <div class="who">Dra. Marina Alencar</div>
+        <div class="role">Clínica Geral</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- Agenda -->
+    <section class="view active" id="view-agenda">
+      <div class="topbar">
+        <div>
+          <h1>Agenda</h1>
+          <div class="sub">Consultório Alencar — visão do dia</div>
+        </div>
+        <div class="today-pill">Terça-feira, 18 de agosto</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-tile">
+          <div class="stat-label">Consultas hoje</div>
+          <div class="stat-value">6</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Confirmadas</div>
+          <div class="stat-value accent">3</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Aguardando confirmação</div>
+          <div class="stat-value">1</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Ocupação da agenda</div>
+          <div class="stat-value">82%</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Hoje</h2>
+          <button class="btn-new" onclick="alert('Rascunho: aqui abriria o formulário de nova consulta.')">
+            + Nova consulta
+          </button>
+        </div>
+        <ul class="agenda-list" id="agenda-list">
+          <!-- rows injected by JS -->
+        </ul>
+      </div>
+    </section>
+
+    <!-- Pacientes -->
+    <section class="view" id="view-pacientes">
+      <div class="topbar">
+        <div>
+          <h1>Pacientes</h1>
+          <div class="sub">32 pacientes cadastrados</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Todos os pacientes</h2>
+          <div class="search-box">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input id="patient-search" type="text" placeholder="Buscar por nome..." oninput="filterPatients()" />
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Paciente</th>
+                <th>Contato</th>
+                <th>Última consulta</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="patients-tbody">
+              <!-- rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prontuário -->
+    <section class="view" id="view-prontuario">
+      <div class="topbar"><div><h1>Prontuário</h1><div class="sub">Histórico clínico por paciente</div></div></div>
+      <div class="placeholder">
+        <div class="ph-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
+        </div>
+        <h2>Prontuário eletrônico</h2>
+        <p>Anotações de consulta, evolução clínica e histórico completo do paciente, integrados à agenda.</p>
+        <span class="soon-badge">Próximo módulo</span>
+      </div>
+    </section>
+
+    <!-- Financeiro -->
+    <section class="view" id="view-financeiro">
+      <div class="topbar"><div><h1>Financeiro</h1><div class="sub">Pagamentos, convênios e recibos</div></div></div>
+      <div class="placeholder">
+        <div class="ph-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        </div>
+        <h2>Controle financeiro</h2>
+        <p>Faturamento por consulta, convênios aceitos e emissão de recibos direto pela agenda.</p>
+        <span class="soon-badge">Próximo módulo</span>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const appointments = [
+    { time: "08:00", meridiem: "manhã", name: "Helena Ribas Domingues", meta: "Consulta de rotina · 30 min", status: "concluida" },
+    { time: "09:00", meridiem: "manhã", name: "João Vitor Sampaio", meta: "Retorno · 20 min", status: "concluida" },
+    { time: "10:30", meridiem: "manhã", name: "Cecília Bittencourt", meta: "Primeira consulta · 40 min", status: "confirmada" },
+    { time: "13:30", meridiem: "tarde", name: "Rogério Peixoto Alves", meta: "Retorno · 20 min", status: "confirmada" },
+    { time: "14:30", meridiem: "tarde", name: "Yasmin Cordovil", meta: "Consulta de rotina · 30 min", status: "agendada" },
+    { time: "16:00", meridiem: "tarde", name: "Emerson Tavares Lima", meta: "Retorno · 20 min", status: "cancelada" },
+  ];
+
+  const statusLabel = {
+    confirmada: "Confirmada",
+    agendada: "Agendada",
+    concluida: "Concluída",
+    cancelada: "Cancelada",
+    faltou: "Faltou",
+  };
+  const statusCycle = ["agendada", "confirmada", "concluida", "faltou", "cancelada"];
+
+  function renderAgenda() {
+    const list = document.getElementById("agenda-list");
+    list.innerHTML = appointments.map((a, i) => `
+      <li class="agenda-row">
+        <div class="time">${a.time}<span>${a.meridiem}</span></div>
+        <div>
+          <div class="who-name">${a.name}</div>
+          <div class="who-meta">${a.meta}</div>
+        </div>
+        <button class="chip ${a.status}" onclick="cycleStatus(${i})" title="Clique para simular mudança de status">
+          ${statusLabel[a.status]}
+        </button>
+        <div class="row-actions">
+          <button class="icon-btn" title="Editar" onclick="event.stopPropagation()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </button>
+          <button class="icon-btn" title="Cancelar" onclick="event.stopPropagation()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </li>
+    `).join("");
+  }
+
+  function cycleStatus(i) {
+    const cur = statusCycle.indexOf(appointments[i].status);
+    appointments[i].status = statusCycle[(cur + 1) % statusCycle.length];
+    renderAgenda();
+  }
+
+  const patients = [
+    { name: "Helena Ribas Domingues", phone: "(21) 98211-4432", email: "helena.ribas@gmail.com", last: "18 ago 2026", active: true },
+    { name: "João Vitor Sampaio", phone: "(21) 99044-1187", email: "jv.sampaio@outlook.com", last: "18 ago 2026", active: true },
+    { name: "Cecília Bittencourt", phone: "(21) 98765-2201", email: "cecilia.bitt@gmail.com", last: "—", active: true },
+    { name: "Rogério Peixoto Alves", phone: "(21) 97711-9034", email: "rogerio.alves@gmail.com", last: "02 jul 2026", active: true },
+    { name: "Yasmin Cordovil", phone: "(21) 98890-6621", email: "yasmin.cordovil@gmail.com", last: "29 jun 2026", active: true },
+    { name: "Emerson Tavares Lima", phone: "(21) 99123-7745", email: "emerson.tlima@gmail.com", last: "14 mai 2026", active: true },
+    { name: "Beatriz Nogueira Fraga", phone: "(21) 98456-3390", email: "bia.fraga@gmail.com", last: "22 fev 2026", active: false },
+    { name: "Otávio Machado Reis", phone: "(21) 97234-8812", email: "otavio.reis@gmail.com", last: "05 jan 2026", active: false },
+  ];
+
+  function initials(name) {
+    return name.split(" ").filter(Boolean).slice(0, 2).map(p => p[0]).join("").toUpperCase();
+  }
+
+  function renderPatients(filter = "") {
+    const tbody = document.getElementById("patients-tbody");
+    const q = filter.trim().toLowerCase();
+    const rows = patients.filter(p => p.name.toLowerCase().includes(q));
+    tbody.innerHTML = rows.map(p => `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:0.65rem;">
+            <div class="avatar" style="width:30px;height:30px;font-size:0.72rem;">${initials(p.name)}</div>
+            <div class="patient-name">${p.name}</div>
+          </div>
+        </td>
+        <td>
+          <div>${p.phone}</div>
+          <div class="patient-sub">${p.email}</div>
+        </td>
+        <td class="mono">${p.last}</td>
+        <td><span class="status-dot ${p.active ? "ativo" : "inativo"}">${p.active ? "Ativo" : "Inativo"}</span></td>
+      </tr>
+    `).join("") || `<tr><td colspan="4" style="text-align:center;color:var(--ink-soft);padding:2rem;">Nenhum paciente encontrado.</td></tr>`;
+  }
+
+  function filterPatients() {
+    renderPatients(document.getElementById("patient-search").value);
+  }
+
+  function showView(view, btn) {
+    document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".view").forEach(el => el.classList.remove("active"));
+    document.getElementById("view-" + view).classList.add("active");
+  }
+
+  function enterApp() {
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("app-shell").classList.add("active");
+  }
+
+  renderAgenda();
+  renderPatients();
+</script>
