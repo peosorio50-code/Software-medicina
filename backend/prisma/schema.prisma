@@ -21,26 +21,43 @@ enum AppointmentStatus {
   NO_SHOW
 }
 
+enum SlotStatus {
+  OPEN
+  BOOKED
+  CLOSED
+}
+
+enum SlotRequestStatus {
+  PENDING
+  CONFIRMED
+  DECLINED
+  CANCELLED
+}
+
 // Tenant: uma clínica/consultório. Todo dado clínico é isolado por clinicId.
 model Clinic {
-  id           String        @id @default(cuid())
-  name         String
-  createdAt    DateTime      @default(now())
-  users        User[]
-  patients     Patient[]
-  appointments Appointment[]
+  id                String             @id @default(cuid())
+  name              String
+  slug              String             @unique
+  createdAt         DateTime           @default(now())
+  users             User[]
+  patients          Patient[]
+  appointments      Appointment[]
+  availabilitySlots AvailabilitySlot[]
+  slotRequests      SlotRequest[]
 }
 
 model User {
-  id           String        @id @default(cuid())
-  clinicId     String
-  clinic       Clinic        @relation(fields: [clinicId], references: [id])
-  name         String
-  email        String        @unique
-  passwordHash String
-  role         UserRole      @default(DOCTOR)
-  createdAt    DateTime      @default(now())
-  appointments Appointment[] @relation("DoctorAppointments")
+  id                String             @id @default(cuid())
+  clinicId          String
+  clinic            Clinic             @relation(fields: [clinicId], references: [id])
+  name              String
+  email             String             @unique
+  passwordHash      String
+  role              UserRole           @default(DOCTOR)
+  createdAt         DateTime           @default(now())
+  appointments      Appointment[]      @relation("DoctorAppointments")
+  availabilitySlots AvailabilitySlot[] @relation("DoctorAvailability")
 
   @@index([clinicId])
 }
@@ -56,8 +73,10 @@ model Patient {
   notes        String?
   createdAt    DateTime      @default(now())
   appointments Appointment[]
+  slotRequests SlotRequest[]
 
   @@index([clinicId])
+  @@index([clinicId, phone])
 }
 
 model Appointment {
@@ -75,4 +94,41 @@ model Appointment {
   createdAt DateTime          @default(now())
 
   @@index([clinicId, startsAt])
+}
+
+// Horário que o médico abre em sua agenda para pacientes solicitarem.
+model AvailabilitySlot {
+  id        String        @id @default(cuid())
+  clinicId  String
+  clinic    Clinic        @relation(fields: [clinicId], references: [id])
+  doctorId  String
+  doctor    User          @relation("DoctorAvailability", fields: [doctorId], references: [id])
+  startsAt  DateTime
+  endsAt    DateTime
+  status    SlotStatus    @default(OPEN)
+  createdAt DateTime      @default(now())
+  requests  SlotRequest[]
+
+  @@index([clinicId, doctorId, startsAt])
+}
+
+// Paciente "levanta a mão" para um horário disponível. Várias solicitações
+// feitas na mesma submissão do paciente compartilham o mesmo groupId, assim
+// confirmar uma cancela automaticamente as demais do mesmo grupo.
+model SlotRequest {
+  id        String             @id @default(cuid())
+  clinicId  String
+  clinic    Clinic             @relation(fields: [clinicId], references: [id])
+  slotId    String
+  slot      AvailabilitySlot   @relation(fields: [slotId], references: [id])
+  patientId String
+  patient   Patient            @relation(fields: [patientId], references: [id])
+  groupId   String
+  status    SlotRequestStatus  @default(PENDING)
+  note      String?
+  createdAt DateTime           @default(now())
+
+  @@index([clinicId, status])
+  @@index([slotId])
+  @@index([groupId])
 }

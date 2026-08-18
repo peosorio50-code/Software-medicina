@@ -20,13 +20,13 @@ export function Register() {
     setError(null);
     setLoading(true);
     try {
-      const res = await api.post<{ token: string; user: any }>("/auth/register", {
+      const res = await api.post<{ token: string; user: any; clinic: any }>("/auth/register", {
         clinicName,
         name,
         email,
         password,
       });
-      login(res.token, res.user);
+      login(res.token, res.user, res.clinic);
       navigate("/agenda");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Erro ao cadastrar");

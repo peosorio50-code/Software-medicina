@@ -18,11 +18,11 @@ export function Login() {
     setError(null);
     setLoading(true);
     try {
-      const res = await api.post<{ token: string; user: any }>("/auth/login", {
+      const res = await api.post<{ token: string; user: any; clinic: any }>("/auth/login", {
         email,
         password,
       });
-      login(res.token, res.user);
+      login(res.token, res.user, res.clinic);
       navigate("/agenda");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Erro ao entrar");

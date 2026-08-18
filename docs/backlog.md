@@ -20,6 +20,13 @@ Prioridade segue MoSCoW: **Essencial** compõe o MVP, **Importante** entra na se
 | AG-10 | Recorrência para tratamentos em série e retorno programado com lembrete | Desejável |
 | AG-11 | Indicador de risco de falta por paciente, baseado no histórico de comparecimento | Desejável |
 
+> **AG-09 — primeira versão implementada.** Médico/staff geram horários livres na tela Disponibilidade
+> (`AvailabilitySlot`); o paciente os vê e "levanta a mão" para um ou mais horários pelo link público
+> `/agendar/:slug`, sem precisar de conta (`SlotRequest`); o consultório confirma um deles na tela
+> Solicitações, o que cria a `Appointment` e recusa automaticamente as opções concorrentes. Falta:
+> política de cancelamento (AG-08) e regras mais finas de disponibilidade (bloqueio por tipo de
+> atendimento, feriados — AG-03).
+
 ## PAC — Pacientes e cadastro
 
 | ID | Requisito | Prioridade |

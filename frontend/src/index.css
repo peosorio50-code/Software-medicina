@@ -819,6 +819,301 @@ tbody tr:hover {
   justify-content: flex-end;
 }
 
+/* ---------- Extra buttons / banners ---------- */
+
+.success {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  color: var(--sage);
+  background: var(--sage-bg);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.85rem;
+  margin-bottom: 1.1rem;
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--rust);
+  border: 1px solid var(--rust-bg);
+  border-radius: 8px;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--rust-bg);
+}
+
+.badge-count {
+  margin-left: auto;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--sidebar-bg);
+  background: var(--sidebar-accent);
+  border-radius: 999px;
+  padding: 0.05rem 0.4rem;
+}
+
+/* ---------- Disponibilidade (AG-09) ---------- */
+
+.weekday-picker {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.weekday-pill {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.weekday-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.day-group {
+  border-bottom: 1px solid var(--line);
+}
+
+.day-group:last-child {
+  border-bottom: none;
+}
+
+.day-group-head {
+  padding: 0.8rem 1.3rem 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-transform: capitalize;
+}
+
+.slot-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0 1.3rem 1rem;
+}
+
+.slot-chip {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.85rem;
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.slot-chip button {
+  border: none;
+  background: none;
+  color: var(--ink-faint);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.slot-chip button:hover {
+  color: var(--rust);
+}
+
+.slot-chip.booked {
+  color: var(--ink-faint);
+  background: var(--surface-alt);
+}
+
+.slot-chip .pending-count {
+  color: var(--amber);
+  font-family: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  font-weight: 600;
+  font-size: 0.72rem;
+}
+
+/* ---------- Solicitações (AG-09) ---------- */
+
+.share-box {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+}
+
+.share-box .share-link {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.85rem;
+  color: var(--ink);
+  flex: 1 1 220px;
+  overflow-wrap: anywhere;
+}
+
+.request-card {
+  padding: 1rem 1.3rem;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.request-card:last-child {
+  border-bottom: none;
+}
+
+.request-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.request-note {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  background: var(--surface-alt);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+}
+
+.request-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ---------- Agenda pública (paciente, sem login) ---------- */
+
+.public-page {
+  min-height: 100vh;
+  padding: 2rem 1rem 4rem;
+  display: flex;
+  justify-content: center;
+}
+
+.public-shell {
+  width: 100%;
+  max-width: 640px;
+}
+
+.public-shell .brand {
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.public-intro {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.public-intro h1 {
+  font-size: 1.7rem;
+  margin-bottom: 0.4rem;
+}
+
+.doctor-picker {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.doctor-pill {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.doctor-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.slot-pick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 0.55rem;
+}
+
+.slot-pick {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 0.55rem 0.4rem;
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: center;
+}
+
+.slot-pick:hover {
+  border-color: var(--accent);
+}
+
+.slot-pick.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.selected-bar {
+  position: sticky;
+  bottom: 1rem;
+  margin-top: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  border-radius: 12px;
+  padding: 1rem 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.confirmation-card {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.confirmation-card .icon-check {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--sage-bg);
+  color: var(--sage);
+  display: grid;
+  place-items: center;
+  margin: 0 auto 1.2rem;
+  font-size: 1.5rem;
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px) {
@@ -891,5 +1186,9 @@ tbody tr:hover {
 
   .main {
     padding: 1.25rem 1rem 2.5rem;
+  }
+
+  .public-page {
+    padding: 1.25rem 0.75rem 3rem;
   }
 }

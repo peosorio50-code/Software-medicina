@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { api } from "../api";
 import { useAuth } from "../context/AuthContext";
 import { ThemeToggle } from "./ThemeToggle";
 import { Brand } from "./Brand";
@@ -18,18 +20,48 @@ function initials(name: string) {
     .join("");
 }
 
-function NavItem({ to, soon, children }: { to: string; soon?: boolean; children: React.ReactNode }) {
+function NavItem({
+  to,
+  soon,
+  badge,
+  children,
+}: {
+  to: string;
+  soon?: boolean;
+  badge?: number;
+  children: React.ReactNode;
+}) {
   return (
     <NavLink to={to} className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}>
       <span className="nav-dot" />
       {children}
       {soon && <span className="soon">em breve</span>}
+      {!!badge && <span className="badge-count">{badge}</span>}
     </NavLink>
   );
 }
 
 export function AppShell() {
   const { user, logout } = useAuth();
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadPending() {
+      try {
+        const data = await api.get<{ id: string }[]>("/requests?status=PENDING");
+        if (!cancelled) setPendingCount(data.length);
+      } catch {
+        // contagem é só um indicador auxiliar, falha silenciosa
+      }
+    }
+    loadPending();
+    const interval = setInterval(loadPending, 30_000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <div className="app-shell">
@@ -38,6 +70,10 @@ export function AppShell() {
         <nav className="nav-group">
           <span className="nav-label">Consultório</span>
           <NavItem to="/agenda">Agenda</NavItem>
+          <NavItem to="/disponibilidade">Disponibilidade</NavItem>
+          <NavItem to="/solicitacoes" badge={pendingCount}>
+            Solicitações
+          </NavItem>
           <NavItem to="/pacientes">Pacientes</NavItem>
           <NavItem to="/prontuario" soon>
             Prontuário
