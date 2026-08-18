@@ -12,8 +12,17 @@ Sistema de organização de consultório médico (agenda, pacientes, e futuramen
 
 ```
 backend/    API REST (auth, pacientes, agenda)
-frontend/   Aplicação web (login, cadastro de clínica, agenda do dia)
+frontend/   Aplicação web (login, cadastro de clínica, agenda do dia, pacientes)
+docs/       Referência regulatória, backlog funcional e rascunho visual do produto
 ```
+
+## Design e tema
+
+O frontend segue a identidade visual definida em `docs/index.html` (rascunho estático publicado via
+GitHub Pages): paleta verde, tipografia Fraunces (títulos) + IBM Plex Sans (corpo) + IBM Plex Mono
+(números), e suporte a **modo claro e escuro** com fundo branco/preto — alternável pelo usuário (ícone
+de sol/lua na barra lateral) e com preferência salva em `localStorage`, respeitando `prefers-color-scheme`
+no primeiro acesso. Os design tokens ficam em `frontend/src/index.css`.
 
 ## Modelo de dados (multi-tenant)
 
@@ -54,13 +63,18 @@ npm run dev                 # app em http://localhost:5173
 
 1. Abra o frontend, clique em "Cadastre sua clínica" e crie a primeira clínica + usuário admin.
 2. Você será redirecionado para a Agenda (vazia).
-3. Use a API diretamente (ou uma futura tela de cadastro) para criar pacientes via `POST /patients` e consultas via `POST /appointments`.
+3. Cadastre pacientes pela tela de Pacientes ("+ Novo paciente") e consultas via `POST /appointments`
+   (ainda sem tela dedicada de criação de consulta).
 
 ## Próximos módulos (roadmap sugerido)
 
+Ver backlog completo com prioridades (MoSCoW) e identificadores por módulo em `docs/backlog.md`.
+
 1. ~~Agenda de consultas~~ (base pronta)
-2. Tela de cadastro/edição de pacientes no frontend
-3. Prontuário eletrônico (histórico clínico, evolução por consulta)
+2. ~~Tela de cadastro/edição de pacientes no frontend~~ (cadastro e busca prontos; edição/mesclagem
+   de duplicados ainda não)
+3. Prontuário eletrônico (histórico clínico, evolução por consulta) — ver `docs/regulatory-reference.md`
+   para os requisitos de NGS1/NGS2 e assinatura antes de iniciar
 4. Financeiro (pagamentos, convênios, recibos)
 5. Convite de outros médicos/staff para a clínica (gestão de usuários)
 6. Notificações/lembretes de consulta (e-mail ou WhatsApp)
