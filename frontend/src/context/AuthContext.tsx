@@ -8,10 +8,17 @@ interface AuthUser {
   role: string;
 }
 
+interface AuthClinic {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 interface AuthContextValue {
   token: string | null;
   user: AuthUser | null;
-  login: (token: string, user: AuthUser) => void;
+  clinic: AuthClinic | null;
+  login: (token: string, user: AuthUser, clinic: AuthClinic) => void;
   logout: () => void;
 }
 
@@ -23,23 +30,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const raw = localStorage.getItem("user");
     return raw ? JSON.parse(raw) : null;
   });
+  const [clinic, setClinic] = useState<AuthClinic | null>(() => {
+    const raw = localStorage.getItem("clinic");
+    return raw ? JSON.parse(raw) : null;
+  });
 
-  function login(newToken: string, newUser: AuthUser) {
+  function login(newToken: string, newUser: AuthUser, newClinic: AuthClinic) {
     localStorage.setItem("token", newToken);
     localStorage.setItem("user", JSON.stringify(newUser));
+    localStorage.setItem("clinic", JSON.stringify(newClinic));
     setToken(newToken);
     setUser(newUser);
+    setClinic(newClinic);
   }
 
   function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("clinic");
     setToken(null);
     setUser(null);
+    setClinic(null);
   }
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout }}>
+    <AuthContext.Provider value={{ token, user, clinic, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,6 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { api, ApiError } from "../api";
 import { useAuth } from "../context/AuthContext";
 
+interface LoginResponse {
+  token: string;
+  user: { id: string; name: string; email: string; role: string };
+  clinic: { id: string; name: string; slug: string };
+}
+
 export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,11 +23,8 @@ export function Login() {
     setError(null);
     setLoading(true);
     try {
-      const res = await api.post<{ token: string; user: any }>("/auth/login", {
-        email,
-        password,
-      });
-      login(res.token, res.user);
+      const res = await api.post<LoginResponse>("/auth/login", { email, password });
+      login(res.token, res.user, res.clinic);
       navigate("/agenda");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Erro ao entrar");
@@ -32,29 +35,36 @@ export function Login() {
 
   return (
     <div className="auth-page">
-      <form onSubmit={handleSubmit} className="auth-form">
+      <div className="auth-card">
+        <div className="brand">
+          <span className="brand-mark">+</span>
+          <span className="brand-name">Consultório</span>
+        </div>
         <h1>Entrar</h1>
-        {error && <p className="error">{error}</p>}
-        <label>
-          E-mail
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </label>
-        <label>
-          Senha
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </label>
-        <button type="submit" disabled={loading}>
-          {loading ? "Entrando..." : "Entrar"}
-        </button>
-        <p>
+        <p className="auth-sub">Acesse a agenda da sua clínica.</p>
+        {error && <p className="banner banner-error">{error}</p>}
+        <form onSubmit={handleSubmit} className="auth-form">
+          <label className="field">
+            E-mail
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </label>
+          <label className="field">
+            Senha
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </label>
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            {loading ? "Entrando..." : "Entrar"}
+          </button>
+        </form>
+        <p className="auth-foot">
           Não tem conta? <Link to="/registrar">Cadastre sua clínica</Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 }
