@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  DOCTOR
+  STAFF
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+// Tenant: uma clínica/consultório. Todo dado clínico é isolado por clinicId.
+model Clinic {
+  id           String        @id @default(cuid())
+  name         String
+  createdAt    DateTime      @default(now())
+  users        User[]
+  patients     Patient[]
+  appointments Appointment[]
+}
+
+model User {
+  id           String        @id @default(cuid())
+  clinicId     String
+  clinic       Clinic        @relation(fields: [clinicId], references: [id])
+  name         String
+  email        String        @unique
+  passwordHash String
+  role         UserRole      @default(DOCTOR)
+  createdAt    DateTime      @default(now())
+  appointments Appointment[] @relation("DoctorAppointments")
+
+  @@index([clinicId])
+}
+
+model Patient {
+  id           String        @id @default(cuid())
+  clinicId     String
+  clinic       Clinic        @relation(fields: [clinicId], references: [id])
+  name         String
+  phone        String?
+  email        String?
+  birthDate    DateTime?
+  notes        String?
+  createdAt    DateTime      @default(now())
+  appointments Appointment[]
+
+  @@index([clinicId])
+}
+
+model Appointment {
+  id        String            @id @default(cuid())
+  clinicId  String
+  clinic    Clinic            @relation(fields: [clinicId], references: [id])
+  patientId String
+  patient   Patient           @relation(fields: [patientId], references: [id])
+  doctorId  String
+  doctor    User              @relation("DoctorAppointments", fields: [doctorId], references: [id])
+  startsAt  DateTime
+  endsAt    DateTime
+  status    AppointmentStatus @default(SCHEDULED)
+  notes     String?
+  createdAt DateTime          @default(now())
+
+  @@index([clinicId, startsAt])
+}
