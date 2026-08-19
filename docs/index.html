@@ -594,6 +594,44 @@
     display: grid; place-items: center; margin: 0 auto 1.2rem; font-size: 1.5rem;
   }
 
+  /* ---------- Financeiro / Documentos / Recibos / NFSe / Meu Consultório ---------- */
+  .filters-bar { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: 1.25rem; }
+  .filters-bar .field { margin-bottom: 0; min-width: 150px; }
+
+  .tabs { display: flex; gap: 0.25rem; border-bottom: 1px solid var(--line); margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .tab {
+    background: none; border: none; border-bottom: 2px solid transparent; border-radius: 0;
+    padding: 0.6rem 0.9rem; font-size: 0.9rem; font-weight: 500; color: var(--ink-soft); cursor: pointer;
+  }
+  .tab.active { border-bottom-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.9rem; margin-bottom: 1.25rem; }
+
+  .photo-avatar, .logo-preview {
+    background: var(--paper); border: 1px solid var(--line); color: var(--ink-faint);
+    display: grid; place-items: center; font-size: 0.68rem; text-align: center; flex-shrink: 0;
+  }
+  .photo-avatar { width: 56px; height: 56px; border-radius: 50%; }
+  .logo-preview { width: 72px; height: 72px; border-radius: 10px; }
+
+  .doctor-card-row { display: flex; gap: 0.9rem; align-items: flex-start; padding: 1rem 1.3rem; border-bottom: 1px solid var(--line); }
+  .doctor-card-row:last-child { border-bottom: none; }
+
+  .signature-box {
+    width: 220px; height: 100px; border: 1px dashed var(--line); border-radius: 6px;
+    background: #fff; color: #9aa; display: grid; place-items: center; font-size: 0.8rem;
+    cursor: crosshair; touch-action: none;
+  }
+
+  .list-plain { list-style: none; margin: 0; padding: 0; }
+  .list-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+    padding: 0.9rem 1.3rem; border-bottom: 1px solid var(--line);
+  }
+  .list-row:last-child { border-bottom: none; }
+
   @media (max-width: 860px) {
     #app-shell.active { grid-template-columns: 1fr; }
     .sidebar { flex-direction: row; align-items: center; overflow-x: auto; gap: 1rem; }
@@ -655,8 +693,23 @@
       <button class="nav-item" data-view="prontuario" onclick="showView('prontuario', this)">
         <span class="nav-dot"></span> Prontuário <span class="soon">em breve</span>
       </button>
+    </nav>
+    <nav class="nav-group">
+      <span class="nav-label">Gestão</span>
       <button class="nav-item" data-view="financeiro" onclick="showView('financeiro', this)">
-        <span class="nav-dot"></span> Financeiro <span class="soon">em breve</span>
+        <span class="nav-dot"></span> Financeiro
+      </button>
+      <button class="nav-item" data-view="documentos" onclick="showView('documentos', this)">
+        <span class="nav-dot"></span> Documentos
+      </button>
+      <button class="nav-item" data-view="recibos" onclick="showView('recibos', this)">
+        <span class="nav-dot"></span> Recibos
+      </button>
+      <button class="nav-item" data-view="nfse" onclick="showView('nfse', this)">
+        <span class="nav-dot"></span> NFSe
+      </button>
+      <button class="nav-item" data-view="configuracoes" onclick="showView('configuracoes', this)">
+        <span class="nav-dot"></span> Meu Consultório
       </button>
     </nav>
     <div class="sidebar-foot">
@@ -890,14 +943,427 @@
 
     <!-- Financeiro -->
     <section class="view" id="view-financeiro">
-      <div class="topbar"><div><h1>Financeiro</h1><div class="sub">Pagamentos, convênios e recibos</div></div></div>
-      <div class="placeholder">
-        <div class="ph-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      <div class="topbar">
+        <div>
+          <h1>Financeiro</h1>
+          <div class="sub">Entradas, saídas e recibos do consultório</div>
         </div>
-        <h2>Controle financeiro</h2>
-        <p>Faturamento por consulta, convênios aceitos e emissão de recibos direto pela agenda.</p>
-        <span class="soon-badge">Próximo módulo</span>
+      </div>
+
+      <div class="filters-bar">
+        <div class="field"><label>De</label><input type="date" value="2026-08-01" /></div>
+        <div class="field"><label>Até</label><input type="date" value="2026-08-19" /></div>
+        <div class="field">
+          <label>Médico</label>
+          <select style="font-family:inherit;font-size:0.95rem;padding:0.6rem 0.7rem;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);">
+            <option>Todos</option>
+            <option>Dra. Marina Alencar</option>
+            <option>Dr. Felipe Andrade</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="stats" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="stat-tile"><div class="stat-label">Entradas no período</div><div class="stat-value">R$ 5.940</div></div>
+        <div class="stat-tile"><div class="stat-label">Saídas no período</div><div class="stat-value">R$ 2.140</div></div>
+        <div class="stat-tile"><div class="stat-label">Saldo</div><div class="stat-value accent">R$ 3.800</div></div>
+        <div class="stat-tile"><div class="stat-label">Recebido</div><div class="stat-value">R$ 4.200</div></div>
+        <div class="stat-tile"><div class="stat-label">A receber</div><div class="stat-value">R$ 1.500</div></div>
+        <div class="stat-tile"><div class="stat-label">Cancelado/adiado</div><div class="stat-value">R$ 180</div></div>
+        <div class="stat-tile"><div class="stat-label">Pacientes atendidos</div><div class="stat-value">18</div></div>
+        <div class="stat-tile"><div class="stat-label">Ticket médio</div><div class="stat-value">R$ 233</div></div>
+      </div>
+
+      <div class="tabs-block">
+        <div class="tabs">
+          <button class="tab active" onclick="showTab(this)">Movimentações</button>
+          <button class="tab" onclick="showTab(this)">Categorias</button>
+          <button class="tab" onclick="showTab(this)">Recorrências</button>
+        </div>
+
+        <div class="tab-panel active">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Movimentações</h2>
+              <button class="btn-new" onclick="alert('Rascunho: aqui abriria o formulário de nova transação.')">+ Nova transação</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Data</th><th>Tipo</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th>Situação</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">18/08</td><td>Entrada</td><td>Consulta — Helena Ribas</td><td>Consulta particular</td><td class="mono">R$ 250,00</td><td><span class="chip chip-static confirmada">Concluído</span></td></tr>
+                  <tr><td class="mono">18/08</td><td>Entrada</td><td>Consulta — João Vitor</td><td>Consulta particular</td><td class="mono">R$ 220,00</td><td><span class="chip chip-static confirmada">Concluído</span></td></tr>
+                  <tr><td class="mono">19/08</td><td>Entrada</td><td>Consulta — Cecília Bittencourt</td><td>Consulta particular</td><td class="mono">R$ 250,00</td><td><span class="chip chip-static agendada">A receber</span></td></tr>
+                  <tr><td class="mono">17/08</td><td>Saída</td><td>Aluguel do consultório</td><td>Aluguel</td><td class="mono">R$ 1.800,00</td><td><span class="chip chip-static confirmada">Concluído</span></td></tr>
+                  <tr><td class="mono">15/08</td><td>Saída</td><td>Material de escritório</td><td>Insumos</td><td class="mono">R$ 340,00</td><td><span class="chip chip-static confirmada">Concluído</span></td></tr>
+                  <tr><td class="mono">12/08</td><td>Entrada</td><td>Retorno — Rogério Peixoto</td><td>Convênio</td><td class="mono">R$ 180,00</td><td><span class="chip chip-static cancelada">Cancelado</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Categorias de receitas e despesas</h2>
+              <button class="btn-new" onclick="alert('Rascunho: aqui abriria o formulário de nova categoria.')">+ Nova categoria</button>
+            </div>
+            <div class="panel-body" style="border-bottom: none; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+              <div>
+                <strong>Receitas</strong>
+                <ul class="list-plain" style="margin-top: 0.6rem;">
+                  <li class="list-row" style="padding: 0.5rem 0;">Consulta particular <button class="icon-btn" title="Remover"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></li>
+                  <li class="list-row" style="padding: 0.5rem 0;">Convênio <button class="icon-btn" title="Remover"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></li>
+                  <li class="list-row" style="padding: 0.5rem 0;">Procedimentos <button class="icon-btn" title="Remover"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></li>
+                </ul>
+              </div>
+              <div>
+                <strong>Despesas</strong>
+                <ul class="list-plain" style="margin-top: 0.6rem;">
+                  <li class="list-row" style="padding: 0.5rem 0;">Aluguel <button class="icon-btn" title="Remover"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></li>
+                  <li class="list-row" style="padding: 0.5rem 0;">Insumos <button class="icon-btn" title="Remover"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></li>
+                  <li class="list-row" style="padding: 0.5rem 0;">Marketing <button class="icon-btn" title="Remover"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Lançamentos recorrentes</h2>
+              <button class="btn-new" onclick="alert('Rascunho: aqui abriria o formulário de nova recorrência.')">+ Nova recorrência</button>
+            </div>
+            <ul class="list-plain">
+              <li class="list-row">
+                <div><strong>Aluguel do consultório</strong> · Saída · R$ 1.800,00 · Mensal · desde 01/01/2026</div>
+                <button class="btn-secondary" onclick="alert('Rascunho: aqui pausaria a recorrência.')">Pausar</button>
+              </li>
+              <li class="list-row">
+                <div><strong>Assinatura do sistema</strong> · Saída · R$ 149,00 · Mensal · desde 01/06/2026</div>
+                <button class="btn-secondary" onclick="alert('Rascunho: aqui pausaria a recorrência.')">Pausar</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Documentos -->
+    <section class="view" id="view-documentos">
+      <div class="topbar">
+        <div>
+          <h1>Documentos</h1>
+          <div class="sub">Atestados, receitas e diagnósticos — a partir de templates ou personalizados</div>
+        </div>
+      </div>
+
+      <div class="tabs-block">
+        <div class="tabs">
+          <button class="tab active" onclick="showTab(this)">Emitir documento</button>
+          <button class="tab" onclick="showTab(this)">Templates</button>
+          <button class="tab" onclick="showTab(this)">Assinaturas dos médicos</button>
+        </div>
+
+        <div class="tab-panel active">
+          <div class="panel" style="margin-bottom: 1.25rem;">
+            <div class="panel-head"><h2>Novo documento</h2></div>
+            <div class="panel-body" style="border-bottom: none;">
+              <div class="form-grid">
+                <div class="field">
+                  <label>Tipo de documento</label>
+                  <select style="font-family:inherit;font-size:0.95rem;padding:0.6rem 0.7rem;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);">
+                    <option>Atestado</option><option>Receita</option><option>Diagnóstico</option><option>Outro</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Template</label>
+                  <select style="font-family:inherit;font-size:0.95rem;padding:0.6rem 0.7rem;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);">
+                    <option>Em branco</option><option>Atestado médico (padrão)</option>
+                  </select>
+                </div>
+                <div class="field"><label>Paciente</label><input placeholder="Selecione um paciente" /></div>
+                <div class="field"><label>Médico responsável</label><input value="Dra. Marina Alencar" /></div>
+                <div class="field full"><label>Título</label><input value="Atestado médico" /></div>
+                <div class="field full">
+                  <label>Conteúdo</label>
+                  <textarea rows="5">Atesto para os devidos fins que o(a) paciente esteve sob meus cuidados médicos, necessitando de afastamento de suas atividades.</textarea>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button class="btn-new" onclick="alert('Rascunho: aqui o documento seria emitido e salvo no histórico do paciente.')">Emitir documento</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h2>Documentos emitidos</h2></div>
+            <ul class="list-plain">
+              <li class="list-row"><div><strong>Atestado</strong> — Helena Ribas Domingues<div class="who-meta">Dr(a). Marina Alencar · 18/08/2026</div></div></li>
+              <li class="list-row"><div><strong>Receita</strong> — João Vitor Sampaio<div class="who-meta">Dr(a). Marina Alencar · 17/08/2026</div></div></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tab-panel">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Templates de documentos</h2>
+              <button class="btn-new" onclick="alert('Rascunho: aqui abriria o formulário para criar ou enviar um template.')">+ Novo template</button>
+            </div>
+            <ul class="list-plain">
+              <li class="list-row"><span>Atestado médico <span class="soon-badge" style="margin-top:0">padrão do sistema</span></span></li>
+              <li class="list-row"><span>Receita médica <span class="soon-badge" style="margin-top:0">padrão do sistema</span></span></li>
+              <li class="list-row"><span>Relatório de diagnóstico <span class="soon-badge" style="margin-top:0">padrão do sistema</span></span></li>
+              <li class="list-row"><span>Atestado personalizado — Consultório Alencar <span class="soon-badge" style="margin-top:0">personalizado</span></span><button class="btn-secondary" onclick="alert('Rascunho: aqui removeria o template.')">Excluir</button></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tab-panel">
+          <div class="panel">
+            <div class="panel-head"><h2>Assinaturas virtuais</h2></div>
+            <div class="panel-body" style="border-bottom: none;">
+              <p style="margin-bottom: 0.9rem; color: var(--ink-soft); font-size: 0.9rem;">Capture a assinatura de cada médico uma vez para usá-la automaticamente ao emitir documentos.</p>
+              <div class="field" style="max-width: 260px; margin-bottom: 1rem;">
+                <label>Médico</label>
+                <select style="font-family:inherit;font-size:0.95rem;padding:0.6rem 0.7rem;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);">
+                  <option>Dra. Marina Alencar</option><option>Dr. Felipe Andrade</option>
+                </select>
+              </div>
+              <canvas id="signature-canvas" width="260" height="110" class="signature-box"></canvas>
+              <div class="form-actions" style="justify-content: flex-start; margin-top: 0.75rem;">
+                <button type="button" class="btn-secondary" onclick="clearSignature()">Limpar</button>
+                <button type="button" class="btn-new" onclick="alert('Rascunho: assinatura salva para este médico.')">Salvar assinatura</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recibos -->
+    <section class="view" id="view-recibos">
+      <div class="topbar">
+        <div>
+          <h1>Recibos</h1>
+          <div class="sub">Controle de recibos a fazer e concluídos, com templates reutilizáveis</div>
+        </div>
+        <button class="btn-new" onclick="alert('Rascunho: aqui abriria o formulário de novo recibo.')">+ Novo recibo</button>
+      </div>
+
+      <div class="tabs-block">
+        <div class="tabs">
+          <button class="tab active" onclick="showTab(this)">A fazer (1)</button>
+          <button class="tab" onclick="showTab(this)">Concluídos (1)</button>
+          <button class="tab" onclick="showTab(this)">Templates</button>
+        </div>
+
+        <div class="tab-panel active">
+          <div class="panel">
+            <ul class="list-plain">
+              <li class="list-row">
+                <div><strong>Recibo de pagamento</strong> — Cecília Bittencourt<div class="who-meta">Dr(a). Marina Alencar · R$ 250,00</div></div>
+                <button class="btn-secondary" onclick="alert('Rascunho: aqui marcaria o recibo como concluído.')">Marcar como concluído</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tab-panel">
+          <div class="panel">
+            <ul class="list-plain">
+              <li class="list-row">
+                <div><strong>Recibo de pagamento</strong> — Helena Ribas Domingues<div class="who-meta">Dr(a). Marina Alencar · R$ 250,00 · pago em 18/08/2026</div></div>
+                <button class="btn-secondary" onclick="alert('Rascunho: aqui reabriria o recibo.')">Reabrir</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tab-panel">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Templates de recibo</h2>
+              <button class="btn-new" onclick="alert('Rascunho: aqui abriria o formulário de novo template.')">+ Novo template</button>
+            </div>
+            <ul class="list-plain">
+              <li class="list-row"><span>Recibo de pagamento <span class="soon-badge" style="margin-top:0">padrão do sistema</span></span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NFSe -->
+    <section class="view" id="view-nfse">
+      <div class="topbar">
+        <div>
+          <h1>NFSe</h1>
+          <div class="sub">Notas fiscais de serviço emitidas pelo consultório</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Notas fiscais</h2>
+          <button class="btn-new" onclick="alert('Rascunho: aqui abriria o formulário de nova nota fiscal.')">+ Nova nota fiscal</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Número</th><th>Data</th><th>Paciente</th><th>Descrição</th><th>Valor</th><th>Situação</th><th></th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="mono">NFSE-0012</td><td class="mono">18/08/2026</td><td>Helena Ribas Domingues</td><td>Consulta médica</td><td class="mono">R$ 250,00</td>
+                <td><span class="chip chip-static confirmada">Emitida</span></td>
+                <td><button class="btn-secondary" onclick="alert('Rascunho: aqui cancelaria a nota fiscal.')">Cancelar</button></td>
+              </tr>
+              <tr>
+                <td class="mono">NFSE-0013</td><td class="mono">19/08/2026</td><td>Cecília Bittencourt</td><td>Consulta médica</td><td class="mono">R$ 250,00</td>
+                <td><span class="chip chip-static agendada">A emitir</span></td>
+                <td><button class="btn-secondary" onclick="alert('Rascunho: aqui emitiria a nota fiscal.')">Emitir</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Meu Consultório (Configurações) -->
+    <section class="view" id="view-configuracoes">
+      <div class="topbar">
+        <div>
+          <h1>Meu Consultório</h1>
+          <div class="sub">Configurações da conta, equipe médica, dados e assinatura</div>
+        </div>
+      </div>
+
+      <div class="tabs-block">
+        <div class="tabs">
+          <button class="tab active" onclick="showTab(this)">Perfil do consultório</button>
+          <button class="tab" onclick="showTab(this)">Médicos</button>
+          <button class="tab" onclick="showTab(this)">Senha</button>
+          <button class="tab" onclick="showTab(this)">LGPD</button>
+          <button class="tab" onclick="showTab(this)">Exportar dados</button>
+          <button class="tab" onclick="showTab(this)">Notas fiscais</button>
+          <button class="tab" onclick="showTab(this)">Assinatura e plano</button>
+        </div>
+
+        <div class="tab-panel active">
+          <div class="panel">
+            <div class="panel-head"><h2>Perfil do consultório</h2></div>
+            <div class="panel-body" style="border-bottom: none;">
+              <p style="margin-bottom: 1rem; color: var(--ink-soft); font-size: 0.9rem;">Este é o perfil da sua conta: os dados do consultório (não de uma pessoa), exibidos em documentos e comunicações.</p>
+              <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1.1rem;">
+                <div class="logo-preview">Logo</div>
+                <div class="field" style="margin-bottom:0;"><label>Logo do consultório</label><input type="file" /></div>
+              </div>
+              <div class="form-grid">
+                <div class="field"><label>Nome do consultório</label><input value="Consultório Alencar" /></div>
+                <div class="field"><label>E-mail do consultório</label><input value="contato@consultorioalencar.com.br" /></div>
+                <div class="field"><label>Telefone de contato</label><input value="(21) 3555-0199" /></div>
+              </div>
+              <div class="form-actions">
+                <button class="btn-new" onclick="alert('Rascunho: alterações salvas.')">Salvar alterações</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Médicos e equipe</h2>
+              <button class="btn-new" onclick="alert('Rascunho: aqui abriria o formulário de novo médico.')">+ Adicionar médico</button>
+            </div>
+            <div class="doctor-card-row">
+              <div class="photo-avatar">MA</div>
+              <div style="flex:1;">
+                <div style="display:flex; justify-content:space-between;"><strong>Dra. Marina Alencar</strong><span class="soon-badge" style="margin-top:0">ADMIN</span></div>
+                <div class="who-meta">marina.alencar@clinica.com</div>
+                <div class="who-meta">CRM-RJ 123456 · Clínica Geral</div>
+                <div class="who-meta">CPF 123.456.789-00</div>
+              </div>
+            </div>
+            <div class="doctor-card-row">
+              <div class="photo-avatar">FA</div>
+              <div style="flex:1;">
+                <div style="display:flex; justify-content:space-between;"><strong>Dr. Felipe Andrade</strong><span class="soon-badge" style="margin-top:0">DOCTOR</span></div>
+                <div class="who-meta">felipe.andrade@clinica.com</div>
+                <div class="who-meta">CRM-RJ 654321 · Cardiologia</div>
+                <div class="who-meta">CPF 987.654.321-00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel">
+          <div class="panel">
+            <div class="panel-head"><h2>Alterar senha</h2></div>
+            <div class="panel-body" style="border-bottom: none; max-width: 420px;">
+              <div class="field"><label>Senha atual</label><input type="password" /></div>
+              <div class="field"><label>Nova senha (mín. 8 caracteres)</label><input type="password" /></div>
+              <div class="field"><label>Confirmar nova senha</label><input type="password" /></div>
+              <div class="form-actions">
+                <button class="btn-new" onclick="alert('Rascunho: senha alterada.')">Alterar senha</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel">
+          <div class="panel">
+            <div class="panel-head"><h2>Privacidade e LGPD</h2></div>
+            <div class="panel-body" style="border-bottom: none; font-size: 0.9rem; color: var(--ink-soft); line-height: 1.6;">
+              <p style="color: var(--ink); margin-bottom: 0.8rem;">Em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018), os dados de pacientes, consultas e documentos cadastrados neste consultório são tratados exclusivamente para as finalidades de gestão clínica e administrativa do próprio consultório.</p>
+              <ul style="margin: 0; padding-left: 1.2rem;">
+                <li>Os dados de cada clínica são isolados e não são compartilhados entre consultórios.</li>
+                <li>Senhas são armazenadas de forma criptografada, nunca em texto plano.</li>
+                <li>Você pode exportar todos os dados da sua conta a qualquer momento na aba "Exportar dados".</li>
+                <li>Pacientes têm direito de solicitar acesso, correção ou exclusão de seus dados pessoais.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel">
+          <div class="panel">
+            <div class="panel-head"><h2>Exportar todos os dados da conta</h2></div>
+            <div class="panel-body" style="border-bottom: none;">
+              <p style="margin-bottom: 1rem; color: var(--ink-soft); font-size: 0.9rem;">Baixe um arquivo com todos os dados do consultório: perfil, médicos, pacientes, consultas, documentos e notas fiscais.</p>
+              <button class="btn-new" onclick="alert('Rascunho: aqui geraria e baixaria o arquivo dados-consultorio.json.')">Exportar dados (.json)</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Notas fiscais</h2>
+              <button class="btn-new" onclick="showView('nfse', document.querySelector('[data-view=nfse]'))">Ver todas em NFSe</button>
+            </div>
+            <ul class="list-plain">
+              <li class="list-row"><span>NFSE-0012 · Helena Ribas Domingues · R$ 250,00</span><span class="chip chip-static confirmada">Emitida</span></li>
+              <li class="list-row"><span>NFSE-0013 · Cecília Bittencourt · R$ 250,00</span><span class="chip chip-static agendada">A emitir</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tab-panel">
+          <div class="panel">
+            <div class="panel-head"><h2>Assinatura e plano</h2></div>
+            <div class="panel-body" style="border-bottom: none;">
+              <div class="card-grid">
+                <div class="stat-tile"><div class="stat-label">Plano atual</div><div class="stat-value" style="font-size:1.15rem;">Profissional</div></div>
+                <div class="stat-tile"><div class="stat-label">Situação</div><div class="stat-value" style="font-size:1.15rem;"><span class="chip chip-static confirmada">Ativo</span></div></div>
+                <div class="stat-tile"><div class="stat-label">Próxima renovação</div><div class="stat-value mono" style="font-size:1.15rem;">01/09/2026</div></div>
+                <div class="stat-tile"><div class="stat-label">Cliente desde</div><div class="stat-value mono" style="font-size:1.15rem;">10/03/2026</div></div>
+              </div>
+              <p style="margin-top: 1rem; color: var(--ink-soft); font-size: 0.9rem;">Para alterar de plano ou dados de cobrança, entre em contato com o suporte.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -1271,6 +1737,54 @@
     document.getElementById("public-preview").classList.remove("active");
   }
 
+  // ---------- Abas genéricas (Financeiro, Documentos, Recibos, Meu Consultório) ----------
+  function showTab(btn) {
+    const block = btn.closest(".tabs-block");
+    const tabs = [...block.querySelectorAll(":scope > .tabs .tab")];
+    const panels = [...block.querySelectorAll(":scope > .tab-panel")];
+    const idx = tabs.indexOf(btn);
+    tabs.forEach((t) => t.classList.remove("active"));
+    panels.forEach((p) => p.classList.remove("active"));
+    btn.classList.add("active");
+    if (panels[idx]) panels[idx].classList.add("active");
+  }
+
+  // ---------- Assinatura virtual (Documentos) ----------
+  function setupSignatureCanvas() {
+    const canvas = document.getElementById("signature-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let drawing = false;
+
+    function pos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+    canvas.addEventListener("pointerdown", (e) => {
+      drawing = true;
+      const { x, y } = pos(e);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    });
+    canvas.addEventListener("pointermove", (e) => {
+      if (!drawing) return;
+      const { x, y } = pos(e);
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#111";
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    });
+    canvas.addEventListener("pointerup", () => (drawing = false));
+    canvas.addEventListener("pointerleave", () => (drawing = false));
+  }
+
+  function clearSignature() {
+    const canvas = document.getElementById("signature-canvas");
+    if (!canvas) return;
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+  }
+
   function showView(view, btn) {
     document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
     btn.classList.add("active");
@@ -1287,5 +1801,6 @@
   renderAvailability();
   renderRequests();
   renderPatients();
+  setupSignatureCanvas();
   syncThemeButton();
 </script>
