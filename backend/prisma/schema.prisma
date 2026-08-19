@@ -21,6 +21,19 @@ enum AppointmentStatus {
   NO_SHOW
 }
 
+enum SlotStatus {
+  OPEN
+  BOOKED
+  CLOSED
+}
+
+enum SlotRequestStatus {
+  PENDING
+  CONFIRMED
+  DECLINED
+  CANCELLED
+}
+
 enum DocumentKind {
   ATESTADO
   RECEITA
@@ -59,43 +72,47 @@ enum InvoiceStatus {
 
 // Tenant: uma clínica/consultório. Todo dado clínico é isolado por clinicId.
 model Clinic {
-  id           String        @id @default(cuid())
-  name         String
-  email        String?
-  phone        String?
-  logoUrl      String?
-  planName     String        @default("Gratuito")
-  planStatus   String        @default("active")
-  planRenewsAt DateTime?
-  createdAt    DateTime      @default(now())
+  id                String             @id @default(cuid())
+  name              String
+  slug              String             @unique
+  email             String?
+  phone             String?
+  logoUrl           String?
+  planName          String             @default("Gratuito")
+  planStatus        String             @default("active")
+  planRenewsAt      DateTime?
+  createdAt         DateTime           @default(now())
   users             User[]
   patients          Patient[]
   appointments      Appointment[]
-  invoices          Invoice[]
-  documentTemplates DocumentTemplate[]
-  documents         PatientDocument[]
+  availabilitySlots AvailabilitySlot[]
+  slotRequests      SlotRequest[]
+  invoices            Invoice[]
+  documentTemplates   DocumentTemplate[]
+  documents           PatientDocument[]
   financeCategories   FinanceCategory[]
   financeRecurrences  FinanceRecurrence[]
   financeTransactions FinanceTransaction[]
 }
 
 model User {
-  id           String        @id @default(cuid())
-  clinicId     String
-  clinic       Clinic        @relation(fields: [clinicId], references: [id])
-  name         String
-  email        String        @unique
-  passwordHash String
-  role         UserRole      @default(DOCTOR)
-  photoUrl     String?
-  cpf          String?       @unique
-  crm          String?
-  specialties  String?
-  signatureUrl String?
-  createdAt    DateTime      @default(now())
-  appointments Appointment[] @relation("DoctorAppointments")
-  documents    PatientDocument[] @relation("DoctorDocuments")
-  financeTransactions FinanceTransaction[] @relation("DoctorTransactions")
+  id                String             @id @default(cuid())
+  clinicId          String
+  clinic            Clinic             @relation(fields: [clinicId], references: [id])
+  name              String
+  email             String             @unique
+  passwordHash      String
+  role              UserRole           @default(DOCTOR)
+  photoUrl          String?
+  cpf               String?            @unique
+  crm               String?
+  specialties       String?
+  signatureUrl      String?
+  createdAt         DateTime           @default(now())
+  appointments      Appointment[]      @relation("DoctorAppointments")
+  availabilitySlots AvailabilitySlot[] @relation("DoctorAvailability")
+  documents           PatientDocument[]     @relation("DoctorDocuments")
+  financeTransactions FinanceTransaction[]  @relation("DoctorTransactions")
 
   @@index([clinicId])
 }
@@ -111,11 +128,13 @@ model Patient {
   notes        String?
   createdAt    DateTime      @default(now())
   appointments Appointment[]
-  documents    PatientDocument[]
+  slotRequests SlotRequest[]
+  documents           PatientDocument[]
   financeTransactions FinanceTransaction[]
-  invoices     Invoice[]
+  invoices            Invoice[]
 
   @@index([clinicId])
+  @@index([clinicId, phone])
 }
 
 model Appointment {
@@ -135,6 +154,43 @@ model Appointment {
   financeTransactions FinanceTransaction[]
 
   @@index([clinicId, startsAt])
+}
+
+// Horário que o médico abre em sua agenda para pacientes solicitarem.
+model AvailabilitySlot {
+  id        String        @id @default(cuid())
+  clinicId  String
+  clinic    Clinic        @relation(fields: [clinicId], references: [id])
+  doctorId  String
+  doctor    User          @relation("DoctorAvailability", fields: [doctorId], references: [id])
+  startsAt  DateTime
+  endsAt    DateTime
+  status    SlotStatus    @default(OPEN)
+  createdAt DateTime      @default(now())
+  requests  SlotRequest[]
+
+  @@index([clinicId, doctorId, startsAt])
+}
+
+// Paciente "levanta a mão" para um horário disponível. Várias solicitações
+// feitas na mesma submissão do paciente compartilham o mesmo groupId, assim
+// confirmar uma cancela automaticamente as demais do mesmo grupo.
+model SlotRequest {
+  id        String            @id @default(cuid())
+  clinicId  String
+  clinic    Clinic            @relation(fields: [clinicId], references: [id])
+  slotId    String
+  slot      AvailabilitySlot  @relation(fields: [slotId], references: [id])
+  patientId String
+  patient   Patient           @relation(fields: [patientId], references: [id])
+  groupId   String
+  status    SlotRequestStatus @default(PENDING)
+  note      String?
+  createdAt DateTime          @default(now())
+
+  @@index([clinicId, status])
+  @@index([slotId])
+  @@index([groupId])
 }
 
 // Nota fiscal de serviço (NFSe) emitida pela clínica.
@@ -175,23 +231,23 @@ model DocumentTemplate {
 // opcionalmente vinculado a uma consulta. RECIBO usa `status` como fluxo
 // "a fazer" (PENDING) / "concluído" (DONE).
 model PatientDocument {
-  id            String           @id @default(cuid())
+  id            String            @id @default(cuid())
   clinicId      String
-  clinic        Clinic           @relation(fields: [clinicId], references: [id])
+  clinic        Clinic            @relation(fields: [clinicId], references: [id])
   templateId    String?
   template      DocumentTemplate? @relation(fields: [templateId], references: [id])
   kind          DocumentKind
   patientId     String
-  patient       Patient          @relation(fields: [patientId], references: [id])
+  patient       Patient           @relation(fields: [patientId], references: [id])
   appointmentId String?
-  appointment   Appointment?     @relation(fields: [appointmentId], references: [id])
+  appointment   Appointment?      @relation(fields: [appointmentId], references: [id])
   doctorId      String
-  doctor        User             @relation("DoctorDocuments", fields: [doctorId], references: [id])
+  doctor        User              @relation("DoctorDocuments", fields: [doctorId], references: [id])
   title         String
   content       String
   amount        Float?
-  status        DocumentStatus   @default(DONE)
-  createdAt     DateTime         @default(now())
+  status        DocumentStatus    @default(DONE)
+  createdAt     DateTime          @default(now())
 
   @@index([clinicId])
   @@index([patientId])

@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, ApiError } from "../api";
 import { useAuth } from "../context/AuthContext";
+import { Brand } from "../components/Brand";
 
 export function Register() {
   const [clinicName, setClinicName] = useState("");
@@ -19,13 +20,13 @@ export function Register() {
     setError(null);
     setLoading(true);
     try {
-      const res = await api.post<{ token: string; user: any }>("/auth/register", {
+      const res = await api.post<{ token: string; user: any; clinic: any }>("/auth/register", {
         clinicName,
         name,
         email,
         password,
       });
-      login(res.token, res.user);
+      login(res.token, res.user, res.clinic);
       navigate("/dashboard");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Erro ao cadastrar");
@@ -36,35 +37,50 @@ export function Register() {
 
   return (
     <div className="auth-page">
-      <form onSubmit={handleSubmit} className="auth-form">
+      <form onSubmit={handleSubmit} className="login-card">
+        <Brand />
         <h1>Cadastrar clínica</h1>
-        {error && <p className="error">{error}</p>}
-        <label>
-          Nome da clínica
-          <input value={clinicName} onChange={(e) => setClinicName(e.target.value)} required />
-        </label>
-        <label>
-          Seu nome
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
-        </label>
-        <label>
-          E-mail
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </label>
-        <label>
-          Senha (mín. 8 caracteres)
+        <p className="login-sub">Crie a clínica e o usuário administrador.</p>
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
+        <div className="field">
+          <label htmlFor="clinicName">Nome da clínica</label>
+          <input id="clinicName" value={clinicName} onChange={(e) => setClinicName(e.target.value)} required />
+        </div>
+        <div className="field">
+          <label htmlFor="name">Seu nome</label>
+          <input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+        </div>
+        <div className="field">
+          <label htmlFor="email">E-mail</label>
           <input
+            id="email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="password">Senha (mín. 8 caracteres)</label>
+          <input
+            id="password"
             type="password"
+            autoComplete="new-password"
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-        </label>
-        <button type="submit" disabled={loading}>
+        </div>
+        <button className="btn-primary" type="submit" disabled={loading}>
           {loading ? "Cadastrando..." : "Cadastrar"}
         </button>
-        <p>
+        <p className="login-foot">
           Já tem conta? <Link to="/login">Entrar</Link>
         </p>
       </form>

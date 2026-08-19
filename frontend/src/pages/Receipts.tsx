@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Layout } from "../components/Layout";
 import { api, ApiError } from "../api";
 import { useAuth } from "../context/AuthContext";
 import type { DoctorUser, Patient } from "../types";
@@ -76,7 +75,7 @@ export function Receipts() {
   const done = receipts.filter((r) => r.status === "DONE");
 
   return (
-    <Layout>
+    <section>
       <div className="page-header">
         <div>
           <h1>Recibos</h1>
@@ -123,7 +122,7 @@ export function Receipts() {
       )}
 
       {tab === "templates" && <ReceiptTemplates templates={templates} onChanged={loadAll} />}
-    </Layout>
+    </section>
   );
 }
 

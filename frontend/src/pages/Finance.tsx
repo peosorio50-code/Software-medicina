@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Layout } from "../components/Layout";
 import { api, ApiError } from "../api";
 import type { DoctorUser, Patient } from "../types";
 
@@ -148,7 +147,7 @@ export function Finance() {
   }
 
   return (
-    <Layout>
+    <section>
       <div className="page-header">
         <div>
           <h1>Financeiro</h1>
@@ -218,7 +217,7 @@ export function Finance() {
           }}
         />
       )}
-    </Layout>
+    </section>
   );
 }
 
@@ -419,8 +418,8 @@ function MovimentacoesTab({
         {!loading && transactions.length === 0 && <p className="muted">Nenhuma movimentação no período.</p>}
 
         {!loading && transactions.length > 0 && (
-          <div className="data-table-wrapper">
-            <table className="data-table">
+          <div className="table-wrap">
+            <table>
               <thead>
                 <tr>
                   <th>Data</th>

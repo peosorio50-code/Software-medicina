@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { api, ApiError } from "../api";
-import { Layout } from "../components/Layout";
 
 interface Appointment {
   id: string;
@@ -19,6 +18,12 @@ const STATUS_LABEL: Record<string, string> = {
   COMPLETED: "Concluída",
   NO_SHOW: "Faltou",
 };
+
+const todayLabel = new Date().toLocaleDateString("pt-BR", {
+  weekday: "long",
+  day: "2-digit",
+  month: "long",
+});
 
 export function Agenda() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -43,48 +48,101 @@ export function Agenda() {
   }
 
   async function updateStatus(id: string, status: string) {
-    await api.patch(`/appointments/${id}/status`, { status });
-    load();
+    setAppointments((current) => current.map((a) => (a.id === id ? { ...a, status } : a)));
+    try {
+      await api.patch(`/appointments/${id}/status`, { status });
+    } catch {
+      load();
+    }
   }
 
+  const confirmed = appointments.filter((a) => a.status === "CONFIRMED").length;
+  const waiting = appointments.filter((a) => a.status === "SCHEDULED").length;
+  const completed = appointments.filter((a) => a.status === "COMPLETED").length;
+
   return (
-    <Layout>
-    <div className="agenda-page">
-      <header>
-        <h1>Agenda de hoje</h1>
-      </header>
+    <section>
+      <div className="topbar">
+        <div>
+          <h1>Agenda</h1>
+          <div className="sub">Visão do dia</div>
+        </div>
+        <div className="today-pill">{todayLabel}</div>
+      </div>
 
-      {loading && <p>Carregando...</p>}
-      {error && <p className="error">{error}</p>}
+      <div className="stats">
+        <div className="stat-tile">
+          <div className="stat-label">Consultas hoje</div>
+          <div className="stat-value">{appointments.length}</div>
+        </div>
+        <div className="stat-tile">
+          <div className="stat-label">Confirmadas</div>
+          <div className="stat-value accent">{confirmed}</div>
+        </div>
+        <div className="stat-tile">
+          <div className="stat-label">Aguardando confirmação</div>
+          <div className="stat-value">{waiting}</div>
+        </div>
+        <div className="stat-tile">
+          <div className="stat-label">Concluídas</div>
+          <div className="stat-value">{completed}</div>
+        </div>
+      </div>
 
-      {!loading && !error && appointments.length === 0 && <p>Nenhuma consulta hoje.</p>}
+      <div className="panel">
+        <div className="panel-head">
+          <h2>Hoje</h2>
+        </div>
 
-      <ul className="appointment-list">
-        {appointments.map((a) => (
-          <li key={a.id} className="appointment-item">
-            <div>
-              <strong>
-                {new Date(a.startsAt).toLocaleTimeString("pt-BR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </strong>{" "}
-              — {a.patient.name} (Dr(a). {a.doctor.name})
-              <div className="status">{STATUS_LABEL[a.status] ?? a.status}</div>
-            </div>
-            <div className="actions">
-              <select value={a.status} onChange={(e) => updateStatus(a.id, e.target.value)}>
-                {Object.entries(STATUS_LABEL).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-    </Layout>
+        {loading && (
+          <p className="state-row">
+            <span className="spinner" aria-hidden="true" /> Carregando...
+          </p>
+        )}
+        {error && (
+          <p className="error" role="alert" style={{ margin: "1rem 1.3rem" }}>
+            {error}
+          </p>
+        )}
+        {!loading && !error && appointments.length === 0 && (
+          <p className="state-row">Nenhuma consulta hoje.</p>
+        )}
+
+        {!loading && !error && appointments.length > 0 && (
+          <ul className="agenda-list">
+            {appointments.map((a) => (
+              <li key={a.id} className="agenda-row">
+                <div className="time">
+                  {new Date(a.startsAt).toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
+                <div>
+                  <div className="who-name">{a.patient.name}</div>
+                  <div className="who-meta">Dr(a). {a.doctor.name}</div>
+                </div>
+                <div className="row-status">
+                  <span className={`chip chip-static status-${a.status}`}>
+                    {STATUS_LABEL[a.status] ?? a.status}
+                  </span>
+                  <select
+                    aria-label={`Status da consulta com ${a.patient.name}`}
+                    value={a.status}
+                    onChange={(e) => updateStatus(a.id, e.target.value)}
+                  >
+                    {Object.entries(STATUS_LABEL).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </section>
   );
 }

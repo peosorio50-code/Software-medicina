@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Layout } from "../components/Layout";
 import { SignaturePad } from "../components/SignaturePad";
 import { api, ApiError } from "../api";
 import { useAuth } from "../context/AuthContext";
@@ -71,7 +70,7 @@ export function Documents() {
   }
 
   return (
-    <Layout>
+    <section>
       <div className="page-header">
         <div>
           <h1>Documentos</h1>
@@ -108,7 +107,7 @@ export function Documents() {
       {tab === "templates" && <TemplatesTab templates={templates} onChanged={loadAll} />}
 
       {tab === "assinaturas" && <AssinaturasTab doctors={doctors} currentUserId={user?.id} onChanged={loadAll} />}
-    </Layout>
+    </section>
   );
 }
 

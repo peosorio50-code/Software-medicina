@@ -139,8 +139,8 @@ export function InvoicesManager({ title = "Notas fiscais (NFSe)" }: { title?: st
       {invoices.length === 0 && <p className="muted">Nenhuma nota fiscal cadastrada.</p>}
 
       {invoices.length > 0 && (
-        <div className="data-table-wrapper">
-          <table className="data-table">
+        <div className="table-wrap">
+          <table>
             <thead>
               <tr>
                 <th>Número</th>

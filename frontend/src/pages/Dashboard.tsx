@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Layout } from "../components/Layout";
 import { api, ApiError } from "../api";
 import type { DoctorUser, Patient } from "../types";
 
@@ -94,7 +93,7 @@ export function Dashboard() {
   const distinctPatients = new Set(appointments.map((a) => a.patient.id)).size;
 
   return (
-    <Layout>
+    <section>
       <div className="page-header">
         <div>
           <h1>Visão geral</h1>
@@ -187,6 +186,6 @@ export function Dashboard() {
           </div>
         </>
       )}
-    </Layout>
+    </section>
   );
 }

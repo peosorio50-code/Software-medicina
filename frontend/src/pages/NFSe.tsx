@@ -1,9 +1,8 @@
-import { Layout } from "../components/Layout";
 import { InvoicesManager } from "../components/InvoicesManager";
 
 export function NFSe() {
   return (
-    <Layout>
+    <section>
       <div className="page-header">
         <div>
           <h1>NFSe</h1>
@@ -11,6 +10,6 @@ export function NFSe() {
         </div>
       </div>
       <InvoicesManager title="Notas fiscais" />
-    </Layout>
+    </section>
   );
 }

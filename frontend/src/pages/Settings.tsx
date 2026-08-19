@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Layout } from "../components/Layout";
 import { InvoicesManager } from "../components/InvoicesManager";
 import { api, ApiError } from "../api";
 import { useAuth } from "../context/AuthContext";
@@ -51,7 +50,7 @@ export function Settings() {
   }
 
   return (
-    <Layout>
+    <section>
       <div className="page-header">
         <div>
           <h1>Meu Consultório</h1>
@@ -76,7 +75,7 @@ export function Settings() {
       {tab === "dados" && <ExportTab />}
       {tab === "notas" && <InvoicesManager />}
       {tab === "plano" && clinic && <PlanTab clinic={clinic} />}
-    </Layout>
+    </section>
   );
 }
 
@@ -183,7 +182,7 @@ function DoctorsTab({ doctors, onChanged }: { doctors: DoctorUser[]; onChanged: 
         {doctors.map((d) => (
           <li key={d.id} className="card">
             <div className="doctor-card">
-              {d.photoUrl ? <img src={d.photoUrl} alt={d.name} className="avatar" /> : <div className="avatar" />}
+              {d.photoUrl ? <img src={d.photoUrl} alt={d.name} className="photo-avatar" /> : <div className="photo-avatar" />}
               <div style={{ flex: 1 }}>
                 <div className="row-between">
                   <strong>{d.name}</strong>
@@ -347,7 +346,7 @@ function EditDoctorForm({
     <form onSubmit={handleSubmit} className="form-grid" style={{ marginTop: "1rem", borderTop: "1px solid var(--border)", paddingTop: "1rem" }}>
       {error && <p className="error" style={{ gridColumn: "1 / -1" }}>{error}</p>}
       <div style={{ gridColumn: "1 / -1", display: "flex", gap: "1rem", alignItems: "center" }}>
-        {photoUrl ? <img src={photoUrl} alt={name} className="avatar" /> : <div className="avatar" />}
+        {photoUrl ? <img src={photoUrl} alt={name} className="photo-avatar" /> : <div className="photo-avatar" />}
         <label className="stacked-field">
           Foto
           <input type="file" accept="image/*" onChange={handlePhoto} />
