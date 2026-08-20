@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, ApiError } from "../api";
 import { useAuth } from "../context/AuthContext";
+import { Logo } from "../components/Logo";
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -32,8 +33,10 @@ export function Login() {
 
   return (
     <div className="auth-page">
+      <Logo size="lg" />
       <form onSubmit={handleSubmit} className="auth-form">
-        <h1>Entrar</h1>
+        <h1>Bem-vindo de volta</h1>
+        <p className="subtitle">Entre para ver a agenda do consultório.</p>
         {error && <p className="error">{error}</p>}
         <label>
           E-mail

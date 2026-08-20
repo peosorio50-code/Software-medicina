@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api, ApiError } from "../api";
 import { useAuth } from "../context/AuthContext";
+import { Logo } from "../components/Logo";
 
 interface Appointment {
   id: string;
@@ -19,6 +20,20 @@ const STATUS_LABEL: Record<string, string> = {
   COMPLETED: "Concluída",
   NO_SHOW: "Faltou",
 };
+
+const STATUS_CLASS: Record<string, string> = {
+  SCHEDULED: "status-scheduled",
+  CONFIRMED: "status-confirmed",
+  CANCELLED: "status-cancelled",
+  COMPLETED: "status-completed",
+  NO_SHOW: "status-no_show",
+};
+
+function initials(name?: string) {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase();
+}
 
 export function Agenda() {
   const { user, logout } = useAuth();
@@ -51,8 +66,13 @@ export function Agenda() {
   return (
     <div className="agenda-page">
       <header>
-        <h1>Agenda de hoje</h1>
         <div>
+          <Logo />
+          <span className="eyebrow">Consultório</span>
+          <h1>Agenda de hoje</h1>
+        </div>
+        <div className="user-bar">
+          <div className="avatar">{initials(user?.name)}</div>
           <span>{user?.name}</span>
           <button onClick={logout}>Sair</button>
         </div>
@@ -61,20 +81,29 @@ export function Agenda() {
       {loading && <p>Carregando...</p>}
       {error && <p className="error">{error}</p>}
 
-      {!loading && !error && appointments.length === 0 && <p>Nenhuma consulta hoje.</p>}
+      {!loading && !error && appointments.length === 0 && (
+        <div className="empty-state">
+          <strong>Nenhuma consulta hoje</strong>
+          Assim que houver agendamentos, eles aparecem aqui.
+        </div>
+      )}
 
       <ul className="appointment-list">
         {appointments.map((a) => (
           <li key={a.id} className="appointment-item">
             <div>
-              <strong>
+              <time>
                 {new Date(a.startsAt).toLocaleTimeString("pt-BR", {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
-              </strong>{" "}
+              </time>{" "}
               — {a.patient.name} (Dr(a). {a.doctor.name})
-              <div className="status">{STATUS_LABEL[a.status] ?? a.status}</div>
+              <div>
+                <span className={`status-pill ${STATUS_CLASS[a.status] ?? ""}`}>
+                  {STATUS_LABEL[a.status] ?? a.status}
+                </span>
+              </div>
             </div>
             <div className="actions">
               <select value={a.status} onChange={(e) => updateStatus(a.id, e.target.value)}>

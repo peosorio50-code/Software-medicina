@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, ApiError } from "../api";
 import { useAuth } from "../context/AuthContext";
+import { Logo } from "../components/Logo";
 
 export function Register() {
   const [clinicName, setClinicName] = useState("");
@@ -36,8 +37,10 @@ export function Register() {
 
   return (
     <div className="auth-page">
+      <Logo size="lg" />
       <form onSubmit={handleSubmit} className="auth-form">
         <h1>Cadastrar clínica</h1>
+        <p className="subtitle">Crie a conta da clínica e do administrador.</p>
         {error && <p className="error">{error}</p>}
         <label>
           Nome da clínica
