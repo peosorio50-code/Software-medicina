@@ -3,55 +3,57 @@
 :root {
   color-scheme: light;
 
-  --paper: #f1f4f1;
+  --paper: #f1f5f4;
   --surface: #ffffff;
-  --surface-alt: #e7eee9;
-  --ink: #17221e;
+  --surface-alt: #e6f0ec;
+  --ink: #16211d;
   --ink-soft: #57655f;
   --ink-faint: #85938c;
-  --line: #dce4de;
-  --accent: #285c4f;
-  --accent-strong: #1d4438;
-  --accent-contrast: #f1f4f1;
-  --amber: #93662a;
-  --amber-bg: #f3e8d4;
-  --rust: #93392f;
-  --rust-bg: #f3dfda;
-  --sky: #2e5578;
-  --sky-bg: #dee7ef;
-  --sage: #2f6e52;
-  --sage-bg: #dcebe1;
+  --line: #dae4df;
+  --accent: #0e6b5c;
+  --accent-strong: #0a4b40;
+  --accent-contrast: #f2f7f6;
+  --accent-gradient: linear-gradient(135deg, #0a4b40 0%, #12806d 55%, #57c4ae 100%);
+  --amber: #8c8375;
+  --amber-bg: #efece6;
+  --rust: #6e7471;
+  --rust-bg: #e7eae8;
+  --sky: #4c9c8e;
+  --sky-bg: #e7f4f1;
+  --sage: #12806d;
+  --sage-bg: #ddf1ec;
   --shadow: 0 1px 2px rgba(23, 34, 30, 0.06), 0 8px 24px -12px rgba(23, 34, 30, 0.18);
 
-  --sidebar-bg: #12211c;
-  --sidebar-ink: #dce8e2;
-  --sidebar-ink-soft: #8fa79c;
-  --sidebar-line: #223832;
-  --sidebar-active: #1c332b;
-  --sidebar-accent: #6fbfa2;
+  --sidebar-bg: #0a1b17;
+  --sidebar-ink: #dceae5;
+  --sidebar-ink-soft: #86a99d;
+  --sidebar-line: #16302a;
+  --sidebar-active: #123128;
+  --sidebar-accent: #57c4ae;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --paper: #10130f;
-  --surface: #191e19;
-  --surface-alt: #1f2721;
-  --ink: #e7eee9;
-  --ink-soft: #a2b0a8;
+  --paper: #0c1614;
+  --surface: #141f1b;
+  --surface-alt: #1a2622;
+  --ink: #e7f1ee;
+  --ink-soft: #9fb3ac;
   --ink-faint: #6e7b73;
-  --line: #2b342e;
-  --accent: #6fbfa2;
-  --accent-strong: #8ed2b8;
-  --accent-contrast: #0c1310;
-  --amber: #e0b67c;
-  --amber-bg: #382c1a;
-  --rust: #e29a8e;
-  --rust-bg: #3a2320;
-  --sky: #9cc2e4;
-  --sky-bg: #1f2e3b;
-  --sage: #8ed2b8;
-  --sage-bg: #1b3327;
+  --line: #26332e;
+  --accent: #4fc3ae;
+  --accent-strong: #7fe0cb;
+  --accent-contrast: #0a1613;
+  --accent-gradient: linear-gradient(135deg, #0e6b5c 0%, #2fa890 55%, #7fe0cb 100%);
+  --amber: #b7ae9e;
+  --amber-bg: #2a2620;
+  --rust: #9ba29e;
+  --rust-bg: #232b28;
+  --sky: #7bc9bb;
+  --sky-bg: #17322c;
+  --sage: #4fc3ae;
+  --sage-bg: #163530;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 28px -12px rgba(0, 0, 0, 0.55);
 }
 
@@ -109,17 +111,18 @@ a {
 button {
   cursor: pointer;
   font-family: inherit;
-  background: var(--accent);
+  background: var(--accent-gradient);
   color: var(--accent-contrast);
   border: none;
   border-radius: 8px;
   padding: 0.55rem 0.9rem;
   font-size: 0.86rem;
   font-weight: 600;
+  transition: filter 0.15s ease;
 }
 
 button:hover:not(:disabled) {
-  background: var(--accent-strong);
+  filter: brightness(1.08);
 }
 
 button:disabled {
@@ -129,7 +132,7 @@ button:disabled {
 
 .btn-primary {
   width: 100%;
-  background: var(--accent);
+  background: var(--accent-gradient);
   color: var(--accent-contrast);
   border: none;
   border-radius: 8px;
@@ -137,10 +140,11 @@ button:disabled {
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
+  transition: filter 0.15s ease;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--accent-strong);
+  filter: brightness(1.08);
 }
 
 .btn-primary:disabled {
@@ -152,7 +156,7 @@ button:disabled {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: var(--accent);
+  background: var(--accent-gradient);
   color: var(--accent-contrast);
   border: none;
   border-radius: 8px;
@@ -161,10 +165,11 @@ button:disabled {
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  transition: filter 0.15s ease;
 }
 
 .btn-new:hover:not(:disabled) {
-  background: var(--accent-strong);
+  filter: brightness(1.08);
 }
 
 .btn-secondary {
@@ -275,7 +280,7 @@ textarea:focus {
   width: 34px;
   height: 34px;
   border-radius: 9px;
-  background: var(--accent);
+  background: var(--accent-gradient);
   color: var(--accent-contrast);
   display: grid;
   place-items: center;
@@ -309,6 +314,7 @@ textarea:focus {
 }
 
 .login-card {
+  position: relative;
   width: 100%;
   max-width: 380px;
   background: var(--surface);
@@ -316,6 +322,15 @@ textarea:focus {
   border-radius: 14px;
   box-shadow: var(--shadow);
   padding: 2.25rem 2rem;
+  overflow: hidden;
+}
+
+.login-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--accent-gradient);
 }
 
 .login-card .brand {

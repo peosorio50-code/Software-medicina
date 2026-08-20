@@ -17,77 +17,80 @@
 </script>
 <style>
   :root {
-    --paper: #F1F4F1;
+    --paper: #F1F5F4;
     --surface: #FFFFFF;
-    --surface-alt: #E7EEE9;
-    --ink: #17221E;
+    --surface-alt: #E6F0EC;
+    --ink: #16211D;
     --ink-soft: #57655F;
     --ink-faint: #85938C;
-    --line: #DCE4DE;
-    --accent: #285C4F;
-    --accent-strong: #1D4438;
-    --accent-contrast: #F1F4F1;
-    --amber: #93662A;
-    --amber-bg: #F3E8D4;
-    --rust: #93392F;
-    --rust-bg: #F3DFDA;
-    --sky: #2E5578;
-    --sky-bg: #DEE7EF;
-    --sage: #2F6E52;
-    --sage-bg: #DCEBE1;
+    --line: #DAE4DF;
+    --accent: #0E6B5C;
+    --accent-strong: #0A4B40;
+    --accent-contrast: #F2F7F6;
+    --accent-gradient: linear-gradient(135deg, #0A4B40 0%, #12806D 55%, #57C4AE 100%);
+    --amber: #8C8375;
+    --amber-bg: #EFECE6;
+    --rust: #6E7471;
+    --rust-bg: #E7EAE8;
+    --sky: #4C9C8E;
+    --sky-bg: #E7F4F1;
+    --sage: #12806D;
+    --sage-bg: #DDF1EC;
     --shadow: 0 1px 2px rgba(23, 34, 30, 0.06), 0 8px 24px -12px rgba(23, 34, 30, 0.18);
 
-    --sidebar-bg: #12211C;
-    --sidebar-ink: #DCE8E2;
-    --sidebar-ink-soft: #8FA79C;
-    --sidebar-line: #223832;
-    --sidebar-active: #1C332B;
-    --sidebar-accent: #6FBFA2;
+    --sidebar-bg: #0A1B17;
+    --sidebar-ink: #DCEAE5;
+    --sidebar-ink-soft: #86A99D;
+    --sidebar-line: #16302A;
+    --sidebar-active: #123128;
+    --sidebar-accent: #57C4AE;
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --paper: #10130F;
-      --surface: #191E19;
-      --surface-alt: #1F2721;
-      --ink: #E7EEE9;
-      --ink-soft: #A2B0A8;
+      --paper: #0C1614;
+      --surface: #141F1B;
+      --surface-alt: #1A2622;
+      --ink: #E7F1EE;
+      --ink-soft: #9FB3AC;
       --ink-faint: #6E7B73;
-      --line: #2B342E;
-      --accent: #6FBFA2;
-      --accent-strong: #8ED2B8;
-      --accent-contrast: #0C1310;
-      --amber: #E0B67C;
-      --amber-bg: #382C1A;
-      --rust: #E29A8E;
-      --rust-bg: #3A2320;
-      --sky: #9CC2E4;
-      --sky-bg: #1F2E3B;
-      --sage: #8ED2B8;
-      --sage-bg: #1B3327;
+      --line: #26332E;
+      --accent: #4FC3AE;
+      --accent-strong: #7FE0CB;
+      --accent-contrast: #0A1613;
+      --accent-gradient: linear-gradient(135deg, #0E6B5C 0%, #2FA890 55%, #7FE0CB 100%);
+      --amber: #B7AE9E;
+      --amber-bg: #2A2620;
+      --rust: #9BA29E;
+      --rust-bg: #232B28;
+      --sky: #7BC9BB;
+      --sky-bg: #17322C;
+      --sage: #4FC3AE;
+      --sage-bg: #163530;
       --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 28px -12px rgba(0, 0, 0, 0.55);
     }
   }
 
   :root[data-theme="dark"] {
-    --paper: #10130F;
-    --surface: #191E19;
-    --surface-alt: #1F2721;
-    --ink: #E7EEE9;
-    --ink-soft: #A2B0A8;
+    --paper: #0C1614;
+    --surface: #141F1B;
+    --surface-alt: #1A2622;
+    --ink: #E7F1EE;
+    --ink-soft: #9FB3AC;
     --ink-faint: #6E7B73;
-    --line: #2B342E;
-    --accent: #6FBFA2;
-    --accent-strong: #8ED2B8;
-    --accent-contrast: #0C1310;
-    --amber: #E0B67C;
-    --amber-bg: #382C1A;
-    --rust: #E29A8E;
-    --rust-bg: #3A2320;
-    --sky: #9CC2E4;
-    --sky-bg: #1F2E3B;
-    --sage: #8ED2B8;
-    --sage-bg: #1B3327;
+    --line: #26332E;
+    --accent: #4FC3AE;
+    --accent-strong: #7FE0CB;
+    --accent-contrast: #0A1613;
+    --accent-gradient: linear-gradient(135deg, #0E6B5C 0%, #2FA890 55%, #7FE0CB 100%);
+    --amber: #B7AE9E;
+    --amber-bg: #2A2620;
+    --rust: #9BA29E;
+    --rust-bg: #232B28;
+    --sky: #7BC9BB;
+    --sky-bg: #17322C;
+    --sage: #4FC3AE;
+    --sage-bg: #163530;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 28px -12px rgba(0, 0, 0, 0.55);
   }
 
@@ -143,6 +146,7 @@
   }
 
   .login-card {
+    position: relative;
     width: 100%;
     max-width: 380px;
     background: var(--surface);
@@ -150,6 +154,15 @@
     border-radius: 14px;
     box-shadow: var(--shadow);
     padding: 2.25rem 2rem;
+    overflow: hidden;
+  }
+
+  .login-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: var(--accent-gradient);
   }
 
   .brand {
@@ -163,7 +176,7 @@
     width: 34px;
     height: 34px;
     border-radius: 9px;
-    background: var(--accent);
+    background: var(--accent-gradient);
     color: var(--accent-contrast);
     display: grid;
     place-items: center;
@@ -197,7 +210,7 @@
 
   .btn-primary {
     width: 100%;
-    background: var(--accent);
+    background: var(--accent-gradient);
     color: var(--accent-contrast);
     border: none;
     border-radius: 8px;
@@ -206,8 +219,9 @@
     font-weight: 600;
     cursor: pointer;
     margin-top: 0.4rem;
+    transition: filter 0.15s ease;
   }
-  .btn-primary:hover { background: var(--accent-strong); }
+  .btn-primary:hover { filter: brightness(1.08); }
 
   .login-foot {
     text-align: center;
@@ -422,7 +436,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    background: var(--accent);
+    background: var(--accent-gradient);
     color: var(--accent-contrast);
     border: none;
     border-radius: 8px;
@@ -431,8 +445,9 @@
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
+    transition: filter 0.15s ease;
   }
-  .btn-new:hover { background: var(--accent-strong); }
+  .btn-new:hover { filter: brightness(1.08); }
 
   .btn-secondary {
     background: var(--surface);
