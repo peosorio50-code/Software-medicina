@@ -67,7 +67,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  font-family: "Montserrat", -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
@@ -969,7 +969,7 @@ tbody tr:hover {
 
 .slot-chip .pending-count {
   color: var(--amber);
-  font-family: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  font-family: "Montserrat", -apple-system, "Segoe UI", sans-serif;
   font-weight: 600;
   font-size: 0.72rem;
 }
