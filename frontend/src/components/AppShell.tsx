@@ -77,26 +77,7 @@ export function AppShell() {
   return (
     <div className={`app-shell${sidebarCollapsed ? " sidebar-collapsed" : ""}`}>
       <aside className="sidebar">
-        <div className="sidebar-head">
-          <Brand size="sm" />
-          <button
-            type="button"
-            className="sidebar-toggle"
-            onClick={toggleSidebar}
-            aria-label="Recolher menu"
-            title="Recolher menu"
-          >
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true">
-              <path
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 6l-6 6 6 6"
-              />
-            </svg>
-          </button>
-        </div>
+        <Brand size="sm" />
         <nav className="nav-group">
           <span className="nav-label">Consultório</span>
           <NavItem to="/dashboard">Início</NavItem>
@@ -147,23 +128,27 @@ export function AppShell() {
         </div>
       </aside>
 
+      <button
+        type="button"
+        className="sidebar-handle"
+        onClick={toggleSidebar}
+        aria-label="Recolher menu"
+        title="Recolher/abrir menu"
+      >
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" aria-hidden="true">
+          <path
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15 6l-6 6 6 6"
+          />
+        </svg>
+      </button>
+
       <main className="main">
         <Outlet />
       </main>
-
-      {sidebarCollapsed && (
-        <button
-          type="button"
-          className="sidebar-reopen"
-          onClick={toggleSidebar}
-          aria-label="Abrir menu"
-          title="Abrir menu"
-        >
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-            <path stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16" />
-          </svg>
-        </button>
-      )}
     </div>
   );
 }
