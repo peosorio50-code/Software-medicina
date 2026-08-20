@@ -4,7 +4,7 @@
   color-scheme: light;
 
   --paper: #f1f5f4;
-  --paper-gradient: linear-gradient(160deg, #ffffff 0%, #e9f0ed 100%);
+  --paper-gradient: linear-gradient(160deg, #ffffff 0%, #dce8e2 100%);
   --surface: #ffffff;
   --surface-alt: #e6f0ec;
   --ink: #16211d;
@@ -37,7 +37,7 @@
   color-scheme: dark;
 
   --paper: #0c1614;
-  --paper-gradient: linear-gradient(160deg, #0a1613 0%, #16241f 100%);
+  --paper-gradient: linear-gradient(160deg, #071009 0%, #1e332b 100%);
   --surface: #141f1b;
   --surface-alt: #1a2622;
   --ink: #e7f1ee;
