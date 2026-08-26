@@ -147,7 +147,9 @@ export function AppShell() {
       </button>
 
       <main className="main">
-        <Outlet />
+        <div className="main-inner">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
