@@ -13,6 +13,7 @@ import { invoicesRouter } from "./routes/invoices";
 import { documentTemplatesRouter } from "./routes/documentTemplates";
 import { documentsRouter } from "./routes/documents";
 import { financeRouter } from "./routes/finance";
+import { aiRouter } from "./routes/ai";
 
 const app = express();
 app.use(cors());
@@ -32,6 +33,7 @@ app.use("/invoices", invoicesRouter);
 app.use("/document-templates", documentTemplatesRouter);
 app.use("/documents", documentsRouter);
 app.use("/finance", financeRouter);
+app.use("/ai", aiRouter);
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3333;
 app.listen(port, () => {

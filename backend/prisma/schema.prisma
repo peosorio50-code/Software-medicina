@@ -70,6 +70,12 @@ enum InvoiceStatus {
   CANCELLED
 }
 
+enum AiFeedback {
+  OTIMO
+  BOM
+  RUIM
+}
+
 // Tenant: uma clínica/consultório. Todo dado clínico é isolado por clinicId.
 model Clinic {
   id                String             @id @default(cuid())
@@ -93,6 +99,7 @@ model Clinic {
   financeCategories   FinanceCategory[]
   financeRecurrences  FinanceRecurrence[]
   financeTransactions FinanceTransaction[]
+  aiInteractions      AiInteraction[]
 }
 
 model User {
@@ -313,4 +320,25 @@ model FinanceTransaction {
   createdAt     DateTime           @default(now())
 
   @@index([clinicId, date])
+}
+
+// Todo uso de IA fica registrado aqui: o que foi pedido, o que a IA respondeu,
+// e o feedback de quem usou. Serve tanto para auditoria (decisão final é sempre
+// humana) quanto para medir consumo de tokens por clínica (limites por plano).
+model AiInteraction {
+  id           String      @id @default(cuid())
+  clinicId     String
+  clinic       Clinic      @relation(fields: [clinicId], references: [id])
+  type         String
+  model        String
+  input        String
+  output       String
+  inputTokens  Int
+  outputTokens Int
+  feedback     AiFeedback?
+  feedbackText String?
+  createdAt    DateTime    @default(now())
+
+  @@index([clinicId, type])
+  @@index([clinicId, createdAt])
 }
