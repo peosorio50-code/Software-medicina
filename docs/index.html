@@ -691,6 +691,136 @@
   }
   .list-row:last-child { border-bottom: none; }
 
+  /* ---------- IA: botão e badge ---------- */
+  .icon-btn.ai-trigger { color: var(--accent); border-color: var(--accent); }
+  .icon-btn.ai-trigger:hover { background: var(--sage-bg); }
+
+  .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    background: var(--sage-bg);
+    border-radius: 999px;
+    padding: 0.22rem 0.55rem;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 19, 15, 0.45);
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 20;
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal-card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .modal-title { display: flex; align-items: center; gap: 0.55rem; font-weight: 600; font-size: 1rem; }
+  .modal-body { padding: 1.2rem; }
+  .modal-sub { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 1rem; }
+
+  .ai-loading {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+  }
+  .ai-spinner {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    border-top-color: var(--accent);
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .ai-message-box {
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .ai-disclaimer {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    background: var(--amber-bg);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    margin-bottom: 1.1rem;
+  }
+  .ai-disclaimer svg { flex-shrink: 0; color: var(--amber); margin-top: 0.1rem; }
+  .ai-disclaimer strong { color: var(--ink); }
+
+  .ai-actions { display: flex; gap: 0.6rem; margin-bottom: 0.4rem; }
+  .ai-actions .btn-new, .ai-actions .btn-secondary { flex: 1; justify-content: center; }
+
+  .feedback-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .feedback-label { font-size: 0.82rem; color: var(--ink-soft); margin-right: 0.2rem; }
+  .feedback-btn {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-soft);
+    border-radius: 999px;
+    padding: 0.32rem 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .feedback-btn:hover { background: var(--surface-alt); }
+  .feedback-btn.selected.otimo { background: var(--sage-bg); color: var(--sage); border-color: var(--sage); }
+  .feedback-btn.selected.bom { background: var(--sky-bg); color: var(--sky); border-color: var(--sky); }
+  .feedback-btn.selected.ruim { background: var(--rust-bg); color: var(--rust); border-color: var(--rust); }
+
+  .feedback-note {
+    width: 100%;
+    margin-top: 0.7rem;
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  .feedback-thanks { font-size: 0.85rem; color: var(--sage); font-weight: 600; }
+
   @media (max-width: 860px) {
     #app-shell.active { grid-template-columns: 1fr; }
     .sidebar { flex-direction: row; align-items: center; overflow-x: auto; gap: 1rem; }
@@ -1489,6 +1619,20 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="ai-modal-overlay" onclick="closeAiModal(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-title"><span class="ai-badge">✦ IA</span> Lembrete de consulta</div>
+      <button class="icon-btn" title="Fechar" onclick="closeAiModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="ai-modal-body">
+      <!-- injected by JS -->
+    </div>
+  </div>
+</div>
+
 <script>
   const appointments = [
     { time: "08:00", meridiem: "manhã", name: "Helena Ribas Domingues", meta: "Consulta de rotina · 30 min", status: "concluida" },
@@ -1521,6 +1665,9 @@
           ${statusLabel[a.status]}
         </button>
         <div class="row-actions">
+          <button class="icon-btn ai-trigger" title="Gerar lembrete com IA" onclick="event.stopPropagation(); openAiModal(${i})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="2.5"/></svg>
+          </button>
           <button class="icon-btn" title="Editar" onclick="event.stopPropagation()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
           </button>
@@ -1870,6 +2017,87 @@
     document.getElementById("login-screen").style.display = "none";
     document.getElementById("app-shell").classList.add("active");
     syncSidebarState(localStorage.getItem("sidebarCollapsed") === "1");
+  }
+
+  /* ---------- Lembrete de consulta com IA (simulado, sem backend) ---------- */
+  const aiOpeners = [
+    "Olá",
+    "Oi",
+    "Olá, tudo bem?",
+  ];
+
+  function firstName(name) {
+    return name.split(" ")[0];
+  }
+
+  function generateReminderText(a) {
+    const opener = aiOpeners[Math.floor(Math.random() * aiOpeners.length)];
+    return `${opener}, ${firstName(a.name)}! Passando para confirmar sua consulta no Consultório Alencar, terça-feira (18/ago) às ${a.time}, com a Dra. Marina Alencar. Pode confirmar presença? Qualquer imprevisto, é só avisar por aqui.`;
+  }
+
+  function openAiModal(i) {
+    const a = appointments[i];
+    const body = document.getElementById("ai-modal-body");
+    document.getElementById("ai-modal-overlay").classList.add("active");
+
+    body.innerHTML = `
+      <p class="modal-sub">Rascunho de lembrete para <strong>${a.name}</strong> — ${a.time}</p>
+      <div class="ai-loading">
+        <span class="ai-spinner"></span> Gerando sugestão de mensagem...
+      </div>
+    `;
+
+    setTimeout(() => renderAiMessage(a), 900);
+  }
+
+  function renderAiMessage(a) {
+    const body = document.getElementById("ai-modal-body");
+    const message = generateReminderText(a);
+    body.innerHTML = `
+      <p class="modal-sub">Rascunho de lembrete para <strong>${a.name}</strong> — ${a.time}</p>
+      <div class="ai-message-box">${message}</div>
+      <div class="ai-disclaimer">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+        <span><strong>Sugestão da IA, não é envio automático.</strong> Revise antes de mandar — quem decide e confirma é sempre a clínica.</span>
+      </div>
+      <div class="ai-actions">
+        <button class="btn-secondary" onclick="closeAiModal()">Fechar</button>
+        <button class="btn-new" onclick="alert('Rascunho: aqui a mensagem seria enviada ao paciente.')">Usar esta mensagem</button>
+      </div>
+      <div id="ai-feedback-area" style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--line);">
+        <div class="feedback-row">
+          <span class="feedback-label">Essa sugestão ficou:</span>
+          <button class="feedback-btn otimo" onclick="selectFeedback('OTIMO', this)">Ótima</button>
+          <button class="feedback-btn bom" onclick="selectFeedback('BOM', this)">Boa</button>
+          <button class="feedback-btn ruim" onclick="selectFeedback('RUIM', this)">Ruim</button>
+        </div>
+        <div id="ai-feedback-extra"></div>
+      </div>
+    `;
+  }
+
+  function selectFeedback(kind, btn) {
+    document.querySelectorAll("#ai-feedback-area .feedback-btn").forEach(el => el.classList.remove("selected"));
+    btn.classList.add("selected");
+
+    const extra = document.getElementById("ai-feedback-extra");
+    if (kind === "RUIM") {
+      extra.innerHTML = `
+        <textarea class="feedback-note" placeholder="O que ficou ruim nessa sugestão? (opcional, ajuda a melhorar a IA)"></textarea>
+        <button class="btn-secondary" style="margin-top:0.6rem;" onclick="submitRuimFeedback()">Enviar feedback</button>
+      `;
+    } else {
+      extra.innerHTML = `<div class="feedback-thanks" style="margin-top:0.6rem;">Obrigado pelo feedback!</div>`;
+    }
+  }
+
+  function submitRuimFeedback() {
+    document.getElementById("ai-feedback-extra").innerHTML = `<div class="feedback-thanks">Obrigado pelo feedback!</div>`;
+  }
+
+  function closeAiModal(event) {
+    if (event) event.preventDefault();
+    document.getElementById("ai-modal-overlay").classList.remove("active");
   }
 
   renderAgenda();
