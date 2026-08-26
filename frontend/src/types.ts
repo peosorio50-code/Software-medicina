@@ -31,3 +31,28 @@ export const DOCUMENT_KIND_LABEL: Record<DocumentKind, string> = {
   RECIBO: "Recibo",
   OUTRO: "Outro",
 };
+
+// ---------- IA ----------
+// Espelham os tipos do backend em backend/src/lib/clinicInsights.ts.
+
+export interface InactivePatient {
+  id: string;
+  name: string;
+  phone: string | null;
+  ultimaConsulta: string;
+  diasSemVir: number;
+  totalConsultas: number;
+  intervaloMedioDias: number | null;
+  // Quantas vezes o tempo de sumiço passou do ritmo habitual do paciente.
+  fatorAtraso: number | null;
+}
+
+export interface AgendaStats {
+  periodo: { de: string; ate: string };
+  total: number;
+  porStatus: Record<string, number>;
+  taxaFaltaPercent: number;
+  taxaCancelamentoPercent: number;
+  porFaixaHoraria: { faixa: string; total: number; faltas: number; cancelamentos: number }[];
+  diaMaisCheio: { dia: string; total: number } | null;
+}

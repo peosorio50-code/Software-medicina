@@ -1029,7 +1029,10 @@
     </div>
     <nav class="nav-group">
       <span class="nav-label">Consultório</span>
-      <button class="nav-item active" data-view="agenda" onclick="showView('agenda', this)">
+      <button class="nav-item active" data-view="inicio" onclick="showView('inicio', this)">
+        <span class="nav-dot"></span> Início
+      </button>
+      <button class="nav-item" data-view="agenda" onclick="showView('agenda', this)">
         <span class="nav-dot"></span> Agenda
       </button>
       <button class="nav-item" data-view="disponibilidade" onclick="showView('disponibilidade', this)">
@@ -1092,7 +1095,87 @@
   <main class="main">
   <div class="main-inner">
     <!-- Agenda -->
-    <section class="view active" id="view-agenda">
+    <!-- Início / Visão geral (espelha frontend/src/pages/Dashboard.tsx) -->
+    <section class="view active" id="view-inicio">
+      <div class="topbar">
+        <div>
+          <h1>Visão geral</h1>
+          <div class="sub">Panorama do consultório no período selecionado</div>
+        </div>
+      </div>
+
+      <div class="filters-bar">
+        <div class="field">
+          <label for="dash-from">De</label>
+          <input type="date" id="dash-from" value="2026-08-01">
+        </div>
+        <div class="field">
+          <label for="dash-to">Até</label>
+          <input type="date" id="dash-to" value="2026-08-26">
+        </div>
+        <div class="field">
+          <label for="dash-doctor">Médico</label>
+          <select id="dash-doctor">
+            <option>Todos</option>
+            <option>Dra. Marina Alencar</option>
+            <option>Dr. Felipe Duarte</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-tile">
+          <div class="stat-label">Consultas no período</div>
+          <div class="stat-value">94</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Pacientes atendidos</div>
+          <div class="stat-value">71</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Total de pacientes cadastrados</div>
+          <div class="stat-value">32</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Médicos ativos</div>
+          <div class="stat-value">2</div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-tile">
+          <div class="stat-label">Entradas</div>
+          <div class="stat-value mono">R$ 5.940,00</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Saídas</div>
+          <div class="stat-value mono">R$ 2.140,00</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Saldo</div>
+          <div class="stat-value mono accent">R$ 3.800,00</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Ticket médio</div>
+          <div class="stat-value mono">R$ 233,00</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Consultas por situação</h2>
+        </div>
+        <ul class="list-plain">
+          <li class="list-row"><span>Agendada</span><strong>6</strong></li>
+          <li class="list-row"><span>Confirmada</span><strong>12</strong></li>
+          <li class="list-row"><span>Concluída</span><strong>78</strong></li>
+          <li class="list-row"><span>Cancelada</span><strong>9</strong></li>
+          <li class="list-row"><span>Faltou</span><strong>7</strong></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="view" id="view-agenda">
       <div class="topbar">
         <div>
           <h1>Agenda</h1>
@@ -2326,15 +2409,20 @@
       ${aiDisclaimer(false)}
       <div class="ai-actions">
         <button class="btn-secondary" onclick="closeAiModal()">Fechar</button>
-        <button class="btn-new" onclick="useAiMessage()">Usar esta mensagem</button>
+        <button class="btn-new" onclick="copyAiMessage(this)">Copiar mensagem</button>
       </div>
       ${feedbackBlock("Essa sugestão ficou:", true)}
     `;
   }
 
-  function useAiMessage() {
-    const text = document.getElementById("ai-message-textarea").value;
-    alert("Rascunho: esta mensagem seria enviada ao paciente:\n\n" + text);
+  // Copiar é o que o sistema real faz (ver frontend/src/components/
+  // AiReminderModal.tsx): quem envia ao paciente é a clínica, pelo canal dela.
+  function copyAiMessage(btn) {
+    const text = btn.closest(".modal-body, .lapsed-msg").querySelector("textarea").value;
+    navigator.clipboard?.writeText(text);
+    const original = btn.textContent;
+    btn.textContent = "Copiado!";
+    setTimeout(() => { btn.textContent = original; }, 2000);
   }
 
   // Bloco de feedback reutilizável. Pode existir mais de um na mesma tela
@@ -2545,7 +2633,7 @@
         ${aiDisclaimer(false)}
         <div class="ai-actions">
           <button class="btn-secondary" onclick="closeReengagement(${i})">Descartar</button>
-          <button class="btn-new" onclick="alert('Rascunho: aqui a mensagem seria enviada por WhatsApp.')">Enviar por WhatsApp</button>
+          <button class="btn-new" onclick="copyAiMessage(this)">Copiar mensagem</button>
         </div>
         ${feedbackBlock("Esse convite ficou:", false)}
       `;

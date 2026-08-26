@@ -10,6 +10,43 @@ visual estático em `docs/index.html` (publicado via GitHub Pages) que define a 
 produto — nome "Meu Consultório", paleta verde, tipografia (Fraunces + IBM Plex Sans/Mono) e o padrão
 de tema claro/escuro. O frontend real (`frontend/`) segue essa identidade.
 
+## Paridade entre o rascunho visual e o app real (regra de trabalho)
+
+O repositório contém duas representações do mesmo produto, e elas **não** se atualizam
+uma a partir da outra:
+
+- `docs/index.html` — rascunho visual estático, arquivo único, dados fictícios, publicado
+  via GitHub Pages em https://peosorio50-code.github.io/Software-medicina/. **É por onde o
+  dono do produto enxerga o sistema**, já que o app real ainda não tem deploy.
+- `frontend/` + `backend/` — o produto real, que só roda depois de conectar banco e chaves.
+
+**Toda mudança de funcionalidade ou de interface entra nos dois lados na mesma tarefa.**
+Uma tela que existe só num dos lados não é trabalho em andamento, é defeito: quem revisa vê
+apenas o rascunho publicado e conclui, erradamente, que o produto já faz aquilo. Foi assim
+que as cinco funcionalidades de IA passaram a existir no rascunho e no backend, mas não na
+tela do app real.
+
+Ao terminar qualquer alteração, rode `./scripts/check-paridade.sh` e relate na resposta:
+
+1. o que mudou em `docs/index.html`;
+2. o que mudou em `frontend/` e `backend/`;
+3. o que ficou só de um lado — e por quê.
+
+Se a pessoa pedir a mudança só num dos lados, faça só nele, mas **diga explicitamente na
+resposta que o outro lado não foi alterado**.
+
+### Exceções legítimas (as únicas)
+
+- **Infraestrutura sem tela**: migração de banco, índice, variável de ambiente, refatoração
+  interna, teste. Não há o que espelhar no rascunho.
+- **Recurso represado por decisão ainda não tomada** (ex.: NGS1 vs NGS2 para o Prontuário).
+  Nesse caso os **dois** lados mostram o mesmo placeholder "Próximo módulo" — nunca um lado
+  funcionando e o outro vazio.
+- O rascunho não tem login, banco nem rede: ele simula com dado fictício, e isso é o
+  esperado. Simular é correto; **omitir a tela não é**.
+- O rascunho nunca promete ação que o produto real não executa (não existe envio por
+  WhatsApp: os dois lados copiam a mensagem para a área de transferência).
+
 ## Público-alvo e decisões já tomadas
 
 - **Público-alvo inicial**: médico autônomo com consultório particular (menor complexidade, não exige

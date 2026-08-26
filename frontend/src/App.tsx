@@ -8,6 +8,8 @@ import { Disponibilidade } from "./pages/Disponibilidade";
 import { Solicitacoes } from "./pages/Solicitacoes";
 import { Patients } from "./pages/Patients";
 import { Prontuario } from "./pages/Prontuario";
+import { Assistente } from "./pages/Assistente";
+import { Reativacao } from "./pages/Reativacao";
 import { Finance } from "./pages/Finance";
 import { Documents } from "./pages/Documents";
 import { Receipts } from "./pages/Receipts";
@@ -41,6 +43,8 @@ function AppRoutes() {
         <Route path="/solicitacoes" element={<Solicitacoes />} />
         <Route path="/pacientes" element={<Patients />} />
         <Route path="/prontuario" element={<Prontuario />} />
+        <Route path="/assistente" element={<Assistente />} />
+        <Route path="/reativacao" element={<Reativacao />} />
         <Route path="/financeiro" element={<Finance />} />
         <Route path="/documentos" element={<Documents />} />
         <Route path="/recibos" element={<Receipts />} />

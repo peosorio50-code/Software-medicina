@@ -4,6 +4,7 @@ import { api } from "../api";
 import { useAuth } from "../context/AuthContext";
 import { ThemeToggle } from "./ThemeToggle";
 import { Brand } from "./Brand";
+import { RobotIcon } from "./AiIcons";
 
 const ROLE_LABEL: Record<string, string> = {
   ADMIN: "Administrador(a)",
@@ -24,16 +25,24 @@ function NavItem({
   to,
   soon,
   badge,
+  ai,
   children,
 }: {
   to: string;
   soon?: boolean;
   badge?: number;
+  ai?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <NavLink to={to} className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}>
-      <span className="nav-dot" />
+      {ai ? (
+        <span className="nav-robot" aria-hidden="true">
+          <RobotIcon size={14} />
+        </span>
+      ) : (
+        <span className="nav-dot" />
+      )}
       {children}
       {soon && <span className="soon">em breve</span>}
       {!!badge && <span className="badge-count">{badge}</span>}
@@ -93,6 +102,12 @@ export function AppShell() {
         </nav>
         <nav className="nav-group">
           <span className="nav-label">Gestão</span>
+          <NavItem to="/assistente" ai>
+            Assistente
+          </NavItem>
+          <NavItem to="/reativacao" ai>
+            Reativação
+          </NavItem>
           <NavItem to="/financeiro">Financeiro</NavItem>
           <NavItem to="/documentos">Documentos</NavItem>
           <NavItem to="/recibos">Recibos</NavItem>

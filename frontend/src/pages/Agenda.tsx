@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { api, ApiError } from "../api";
+import { AiInsightPanel } from "../components/AiInsightPanel";
+import { AiReminderModal } from "../components/AiReminderModal";
+import { RobotIcon } from "../components/AiIcons";
 
 interface Appointment {
   id: string;
@@ -25,10 +28,16 @@ const todayLabel = new Date().toLocaleDateString("pt-BR", {
   month: "long",
 });
 
+interface AgendaInsightsResponse {
+  insights: string;
+  interactionId: string;
+}
+
 export function Agenda() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reminderFor, setReminderFor] = useState<Appointment | null>(null);
 
   useEffect(() => {
     load();
@@ -89,6 +98,18 @@ export function Agenda() {
         </div>
       </div>
 
+      <AiInsightPanel
+        title="Leitura da agenda"
+        description="Veja padrões de falta, cancelamento e ocupação dos últimos 30 dias — e o que dá para fazer a respeito."
+        buttonLabel="Analisar agenda"
+        loadingLabel="Analisando os últimos 30 dias..."
+        feedbackLabel="Essa análise ficou:"
+        onGenerate={async () => {
+          const data = await api.post<AgendaInsightsResponse>("/ai/agenda/insights", {});
+          return { text: data.insights, interactionId: data.interactionId };
+        }}
+      />
+
       <div className="panel">
         <div className="panel-head">
           <h2>Hoje</h2>
@@ -123,9 +144,20 @@ export function Agenda() {
                   <div className="who-meta">Dr(a). {a.doctor.name}</div>
                 </div>
                 <div className="row-status">
-                  <span className={`chip chip-static status-${a.status}`}>
-                    {STATUS_LABEL[a.status] ?? a.status}
-                  </span>
+                  <div className="row-status-top">
+                    <button
+                      type="button"
+                      className="icon-btn ai-trigger"
+                      title="Gerar lembrete com IA"
+                      aria-label={`Gerar lembrete com IA para ${a.patient.name}`}
+                      onClick={() => setReminderFor(a)}
+                    >
+                      <RobotIcon size={14} />
+                    </button>
+                    <span className={`chip chip-static status-${a.status}`}>
+                      {STATUS_LABEL[a.status] ?? a.status}
+                    </span>
+                  </div>
                   <select
                     aria-label={`Status da consulta com ${a.patient.name}`}
                     value={a.status}
@@ -143,6 +175,18 @@ export function Agenda() {
           </ul>
         )}
       </div>
+
+      {reminderFor && (
+        <AiReminderModal
+          appointmentId={reminderFor.id}
+          patientName={reminderFor.patient.name}
+          timeLabel={new Date(reminderFor.startsAt).toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+          onClose={() => setReminderFor(null)}
+        />
+      )}
     </section>
   );
 }

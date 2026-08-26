@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { api, ApiError } from "../api";
 import type { DoctorUser, Patient } from "../types";
+import { AiInsightPanel } from "../components/AiInsightPanel";
 
 type TxType = "INCOME" | "EXPENSE";
 type TxStatus = "PENDING" | "COMPLETED" | "CANCELLED";
@@ -71,6 +72,11 @@ function firstDayOfMonth() {
 
 function today() {
   return new Date().toISOString().slice(0, 10);
+}
+
+interface FinanceSummaryResponse {
+  summary: string;
+  interactionId: string;
 }
 
 export function Finance() {
@@ -178,6 +184,21 @@ export function Finance() {
       </div>
 
       {error && <p className="error">{error}</p>}
+
+      <AiInsightPanel
+        title="Resumo do período"
+        description="Uma leitura curta do resultado do período selecionado, destacando o que mais pesa no caixa."
+        buttonLabel="Gerar resumo"
+        loadingLabel="Analisando os números do período..."
+        feedbackLabel="Esse resumo ficou:"
+        onGenerate={async () => {
+          const data = await api.post<FinanceSummaryResponse>("/ai/finance/summary", {
+            from,
+            to: `${to}T23:59:59`,
+          });
+          return { text: data.summary, interactionId: data.interactionId };
+        }}
+      />
 
       <div className="tabs">
         <button className={`tab ${tab === "movimentacoes" ? "active" : ""}`} onClick={() => setTab("movimentacoes")}>
