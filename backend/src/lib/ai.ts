@@ -7,12 +7,19 @@ const anthropic = new Anthropic();
 // Tarefas simples (lembrete, mensagem) vão no Haiku; tarefas que exigem mais
 // raciocínio (consultar dados, analisar o financeiro) sobem para um modelo
 // mais forte, onde errar custa mais caro que a diferença de preço.
-export type AiFeatureType = "appointment_reminder" | "data_assistant" | "finance_summary";
+export type AiFeatureType =
+  | "appointment_reminder"
+  | "data_assistant"
+  | "finance_summary"
+  | "patient_reengagement"
+  | "agenda_insights";
 
 const MODEL_BY_FEATURE: Record<AiFeatureType, string> = {
   appointment_reminder: "claude-haiku-4-5",
   data_assistant: "claude-opus-5",
   finance_summary: "claude-opus-5",
+  patient_reengagement: "claude-haiku-4-5",
+  agenda_insights: "claude-opus-5",
 };
 
 interface GenerateAiTextParams {

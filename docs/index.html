@@ -910,6 +910,43 @@
   .ai-panel { border-color: var(--accent); }
   .ai-panel .panel-head { background: var(--sage-bg); }
   .ai-summary-text { font-size: 0.92rem; line-height: 1.6; margin-bottom: 1rem; }
+
+  /* ---------- Reativação de pacientes ---------- */
+  .lapsed-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.3rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .lapsed-row:last-child { border-bottom: none; }
+  .lapsed-meta { font-size: 0.8rem; color: var(--ink-soft); margin-top: 0.2rem; }
+
+  /* Marca quem quebrou o próprio ritmo de retorno — é o sinal que ordena a
+     lista, então precisa estar visível e não escondido numa coluna qualquer. */
+  .lapsed-flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 0.18rem 0.5rem;
+    white-space: nowrap;
+  }
+  .lapsed-flag.alto { background: var(--amber-bg); color: var(--amber); }
+  .lapsed-flag.medio { background: var(--sky-bg); color: var(--sky); }
+  .lapsed-flag.neutro { background: var(--surface-alt); color: var(--ink-soft); }
+
+  .lapsed-msg {
+    grid-column: 1 / -1;
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    margin-top: 0.3rem;
+  }
   .ai-summary-text p { margin: 0 0 0.6rem; }
   .ai-summary-text p:last-child { margin-bottom: 0; }
   .ai-summary-text ul { margin: 0.3rem 0 0.6rem; padding-left: 1.1rem; }
@@ -982,6 +1019,9 @@
       <button class="nav-item" data-view="assistente" onclick="showView('assistente', this)">
         <svg class="nav-robot" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1" fill="currentColor" stroke="none"/><path d="M9 13v2M15 13v2"/><path d="M2 14h2M20 14h2"/></svg> Assistente
       </button>
+      <button class="nav-item" data-view="reativacao" onclick="showView('reativacao', this)">
+        <svg class="nav-robot" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1" fill="currentColor" stroke="none"/><path d="M9 13v2M15 13v2"/><path d="M2 14h2M20 14h2"/></svg> Reativação
+      </button>
       <button class="nav-item" data-view="financeiro" onclick="showView('financeiro', this)">
         <span class="nav-dot"></span> Financeiro
       </button>
@@ -1045,6 +1085,21 @@
         <div class="stat-tile">
           <div class="stat-label">Ocupação da agenda</div>
           <div class="stat-value">82%</div>
+        </div>
+      </div>
+
+      <div class="panel ai-panel" style="margin-bottom: 1.25rem;">
+        <div class="panel-head">
+          <h2 style="display:flex;align-items:center;gap:0.5rem;">
+            <span class="ai-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1" fill="currentColor" stroke="none"/><path d="M9 13v2M15 13v2"/><path d="M2 14h2M20 14h2"/></svg> IA</span>
+            Como está a sua agenda
+          </h2>
+          <button class="btn-new" id="agenda-insights-btn" onclick="generateAgendaInsights()">Analisar últimos 30 dias</button>
+        </div>
+        <div class="panel-body" style="border-bottom: none;" id="agenda-insights-body">
+          <p style="margin:0;color:var(--ink-soft);font-size:0.9rem;">
+            Veja padrões de falta, cancelamento e ocupação dos últimos 30 dias — e o que dá para fazer a respeito.
+          </p>
         </div>
       </div>
 
@@ -1254,6 +1309,35 @@
       <div class="panel" id="ask-history-panel" style="display: none;">
         <div class="panel-head"><h2>Respostas</h2></div>
         <div id="ask-history"></div>
+      </div>
+    </section>
+
+    <!-- Reativação de pacientes -->
+    <section class="view" id="view-reativacao">
+      <div class="topbar">
+        <div>
+          <h1>Reativação</h1>
+          <div class="sub">Pacientes que pararam de voltar, ordenados por quem mais fugiu do próprio ritmo</div>
+        </div>
+      </div>
+
+      <div class="filters-bar">
+        <div class="field">
+          <label for="lapsed-months">Sem vir há mais de</label>
+          <select id="lapsed-months" onchange="renderLapsed()" style="font-family:inherit;font-size:0.95rem;padding:0.6rem 0.7rem;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);">
+            <option value="3">3 meses</option>
+            <option value="6" selected>6 meses</option>
+            <option value="12">12 meses</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Pacientes para retomar contato</h2>
+          <span class="today-pill" id="lapsed-count"></span>
+        </div>
+        <div id="lapsed-list"></div>
       </div>
     </section>
 
@@ -2362,6 +2446,109 @@
     return false;
   }
 
+  /* ---------- Reativação de pacientes (simulado) ----------
+     No sistema real quem monta e ordena esta lista é o banco (é conta, não IA);
+     a IA entra só ao clicar em "Gerar convite". */
+  const lapsedPatients = [
+    { name: "Rogério Peixoto Alves", phone: "(21) 97711-9034", meses: 12, consultas: 4, ritmo: 90, fator: 4.0 },
+    { name: "Beatriz Nogueira Fraga", phone: "(21) 98456-3390", meses: 11, consultas: 6, ritmo: 120, fator: 2.8 },
+    { name: "Otávio Machado Reis", phone: "(21) 97234-8812", meses: 8, consultas: 3, ritmo: 150, fator: 1.6 },
+    { name: "Lúcia Amaral Prado", phone: "(21) 98122-4471", meses: 14, consultas: 1, ritmo: null, fator: null },
+    { name: "Henrique Salles Vaz", phone: "(21) 99655-2108", meses: 7, consultas: 1, ritmo: null, fator: null },
+  ];
+
+  function lapsedFlag(p) {
+    if (p.fator === null) {
+      return `<span class="lapsed-flag neutro">veio uma vez só</span>`;
+    }
+    const classe = p.fator >= 2.5 ? "alto" : "medio";
+    return `<span class="lapsed-flag ${classe}">${p.fator}x o intervalo habitual</span>`;
+  }
+
+  function renderLapsed() {
+    const meses = Number(document.getElementById("lapsed-months").value);
+    const lista = lapsedPatients.filter((p) => p.meses >= meses);
+    const box = document.getElementById("lapsed-list");
+    document.getElementById("lapsed-count").textContent =
+      `${lista.length} ${lista.length === 1 ? "paciente" : "pacientes"}`;
+
+    if (lista.length === 0) {
+      box.innerHTML = `<div class="state-row">Nenhum paciente parado há mais de ${meses} meses.</div>`;
+      return;
+    }
+
+    box.innerHTML = lista.map((p, i) => `
+      <div class="lapsed-row" id="lapsed-${i}">
+        <div>
+          <div class="who-name">${p.name}</div>
+          <div class="lapsed-meta">
+            Última consulta há ${p.meses} meses · ${p.consultas} ${p.consultas === 1 ? "consulta" : "consultas"} no histórico${p.ritmo ? ` · vinha a cada ${p.ritmo} dias` : ""}
+          </div>
+        </div>
+        ${lapsedFlag(p)}
+        <button class="btn-new" onclick="generateReengagement(${i})">Gerar convite</button>
+      </div>
+    `).join("");
+  }
+
+  function generateReengagement(i) {
+    const row = document.getElementById(`lapsed-${i}`);
+    const p = lapsedPatients.filter(
+      (x) => x.meses >= Number(document.getElementById("lapsed-months").value),
+    )[i];
+
+    let box = row.querySelector(".lapsed-msg");
+    if (!box) {
+      box = document.createElement("div");
+      box.className = "lapsed-msg";
+      row.appendChild(box);
+    }
+    box.innerHTML = `<div class="ai-loading"><span class="ai-spinner"></span> Escrevendo o convite...</div>`;
+
+    setTimeout(() => {
+      const texto = `Olá, ${firstName(p.name)}! Aqui é do Consultório Alencar. Faz um tempo que não nos vemos e queríamos saber como você está. Se quiser marcar um horário, é só responder por aqui que a gente organiza. Um abraço!`;
+      box.innerHTML = `
+        <textarea class="ai-message-box" rows="3">${escapeHtml(texto)}</textarea>
+        ${aiDisclaimer(false)}
+        <div class="ai-actions">
+          <button class="btn-secondary" onclick="closeReengagement(${i})">Descartar</button>
+          <button class="btn-new" onclick="alert('Rascunho: aqui a mensagem seria enviada por WhatsApp.')">Enviar por WhatsApp</button>
+        </div>
+        ${feedbackBlock("Esse convite ficou:", false)}
+      `;
+    }, 1000);
+  }
+
+  function closeReengagement(i) {
+    const box = document.querySelector(`#lapsed-${i} .lapsed-msg`);
+    if (box) box.remove();
+  }
+
+  /* ---------- Insights da agenda (simulado) ---------- */
+  function generateAgendaInsights() {
+    const body = document.getElementById("agenda-insights-body");
+    const btn = document.getElementById("agenda-insights-btn");
+    btn.disabled = true;
+    body.innerHTML = `<div class="ai-loading"><span class="ai-spinner"></span> Analisando os últimos 30 dias...</div>`;
+
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = "Analisar de novo";
+      body.innerHTML = `
+        <div class="ai-summary-text">
+          <p>Foram <strong>94 consultas</strong> nos últimos 30 dias, com 83% de comparecimento — uma agenda saudável, mas com um ponto claro de perda.</p>
+          <ul>
+            <li><strong>As faltas se concentram no fim da tarde:</strong> 5 das 7 faltas foram em horários a partir das 16h, que respondem por só um terço da agenda. Vale confirmar esses horários na véspera, e não no mesmo dia.</li>
+            <li><strong>Terça é o dia mais cheio</strong> (24 consultas) e também onde estão 4 dos 9 cancelamentos — pode ser sinal de agenda apertada demais nesse dia.</li>
+            <li>Os 9 cancelamentos abriram horários que não foram reocupados. Uma lista de espera para encaixe recuperaria parte disso.</li>
+          </ul>
+        </div>
+        ${aiDisclaimer(false)}
+        ${feedbackBlock("Essa análise ficou:", false)}
+      `;
+    }, 1200);
+  }
+
   /* ---------- Resumo financeiro com IA (simulado) ---------- */
   function generateFinanceSummary() {
     const body = document.getElementById("finance-summary-body");
@@ -2392,6 +2579,7 @@
   renderRequests();
   renderPatients();
   renderAskSuggestions();
+  renderLapsed();
   setupSignatureCanvas();
   syncThemeButton();
 </script>

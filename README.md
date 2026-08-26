@@ -63,6 +63,15 @@ consumo por clínica para os limites de plano.
 | `POST /ai/appointments/:id/reminder` | Rascunho de mensagem de lembrete de consulta | Haiku (tarefa simples) |
 | `POST /ai/ask` | Assistente de dados: pergunta em português, resposta com números reais do banco | Opus |
 | `POST /ai/finance/summary` | Leitura em texto do resultado financeiro do período | Opus |
+| `GET /ai/patients/inactive` | Pacientes que pararam de voltar, ranqueados | — (só consulta, sem IA) |
+| `POST /ai/patients/:id/reengagement` | Rascunho de convite para um paciente voltar | Haiku |
+| `POST /ai/agenda/insights` | Padrões de falta/cancelamento da agenda e o que fazer | Opus |
+
+**Onde a IA não entra**: encontrar quem sumiu e medir a agenda é conta, e conta o Postgres faz com
+exatidão (`backend/src/lib/clinicInsights.ts`). O ranking de reativação usa o histórico de cada
+paciente — quem vinha a cada 3 meses e sumiu há 12 aparece antes de quem veio uma vez só e sumiu há 14,
+porque quebrou o próprio padrão. A IA só escreve o texto em cima desses números; usar modelo para
+calcular seria mais caro, mais lento e sujeito a erro.
 
 **Assistente de dados (`/ai/ask`)**: a IA não lê o banco diretamente — ela escolhe quais *ferramentas*
 chamar (`backend/src/lib/aiTools.ts`) e quem executa a consulta é o Postgres. Duas garantias valem para
