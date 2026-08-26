@@ -830,6 +830,91 @@
 
   .feedback-thanks { font-size: 0.85rem; color: var(--sage); font-weight: 600; }
 
+  /* ---------- Assistente de dados ---------- */
+  .nav-item .nav-robot { flex-shrink: 0; color: var(--sidebar-accent); }
+
+  .ask-box {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .ask-box textarea {
+    flex: 1 1 260px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    resize: vertical;
+    min-height: 48px;
+  }
+
+  .suggestion-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.9rem; }
+  .suggestion-chip {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-soft);
+    border-radius: 999px;
+    padding: 0.38rem 0.8rem;
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    text-align: left;
+  }
+  .suggestion-chip:hover { border-color: var(--accent); color: var(--ink); }
+
+  .qa-item { padding: 1.1rem 1.3rem; border-bottom: 1px solid var(--line); }
+  .qa-item:last-child { border-bottom: none; }
+  .qa-question { font-weight: 600; font-size: 0.94rem; margin-bottom: 0.6rem; }
+  .qa-answer {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+  .qa-robot {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--sage-bg);
+    color: var(--accent);
+    display: grid; place-items: center;
+    margin-top: 0.05rem;
+  }
+
+  /* Mostra de onde veio o número: a IA não inventou, consultou o banco. */
+  .qa-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    margin-top: 0.55rem;
+  }
+  .qa-source code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    background: var(--surface-alt);
+    border-radius: 4px;
+    padding: 0.1rem 0.35rem;
+    color: var(--ink-soft);
+  }
+
+  .qa-feedback { margin-top: 0.8rem; }
+
+  /* ---------- Resumo financeiro com IA ---------- */
+  .ai-panel { border-color: var(--accent); }
+  .ai-panel .panel-head { background: var(--sage-bg); }
+  .ai-summary-text { font-size: 0.92rem; line-height: 1.6; margin-bottom: 1rem; }
+  .ai-summary-text p { margin: 0 0 0.6rem; }
+  .ai-summary-text p:last-child { margin-bottom: 0; }
+  .ai-summary-text ul { margin: 0.3rem 0 0.6rem; padding-left: 1.1rem; }
+  .ai-summary-text li { margin-bottom: 0.3rem; }
+
   @media (max-width: 860px) {
     #app-shell.active { grid-template-columns: 1fr; }
     .sidebar { flex-direction: row; align-items: center; overflow-x: auto; gap: 1rem; }
@@ -894,6 +979,9 @@
     </nav>
     <nav class="nav-group">
       <span class="nav-label">Gestão</span>
+      <button class="nav-item" data-view="assistente" onclick="showView('assistente', this)">
+        <svg class="nav-robot" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1" fill="currentColor" stroke="none"/><path d="M9 13v2M15 13v2"/><path d="M2 14h2M20 14h2"/></svg> Assistente
+      </button>
       <button class="nav-item" data-view="financeiro" onclick="showView('financeiro', this)">
         <span class="nav-dot"></span> Financeiro
       </button>
@@ -1144,6 +1232,31 @@
     </section>
 
     <!-- Financeiro -->
+    <!-- Assistente de dados -->
+    <section class="view" id="view-assistente">
+      <div class="topbar">
+        <div>
+          <h1>Assistente</h1>
+          <div class="sub">Pergunte em português sobre os dados do seu consultório</div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-bottom: 1.25rem;">
+        <div class="panel-body" style="border-bottom: none;">
+          <form class="ask-box" onsubmit="return askAssistant(event)">
+            <textarea id="ask-input" rows="2" placeholder="Ex: quantos pacientes acima de 55 anos atendi nos últimos 2 meses?"></textarea>
+            <button type="submit" class="btn-new">Perguntar</button>
+          </form>
+          <div class="suggestion-chips" id="ask-suggestions"></div>
+        </div>
+      </div>
+
+      <div class="panel" id="ask-history-panel" style="display: none;">
+        <div class="panel-head"><h2>Respostas</h2></div>
+        <div id="ask-history"></div>
+      </div>
+    </section>
+
     <section class="view" id="view-financeiro">
       <div class="topbar">
         <div>
@@ -1174,6 +1287,21 @@
         <div class="stat-tile"><div class="stat-label">Cancelado/adiado</div><div class="stat-value">R$ 180</div></div>
         <div class="stat-tile"><div class="stat-label">Pacientes atendidos</div><div class="stat-value">18</div></div>
         <div class="stat-tile"><div class="stat-label">Ticket médio</div><div class="stat-value">R$ 233</div></div>
+      </div>
+
+      <div class="panel ai-panel" style="margin-bottom: 1.25rem;">
+        <div class="panel-head">
+          <h2 style="display:flex;align-items:center;gap:0.5rem;">
+            <span class="ai-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1" fill="currentColor" stroke="none"/><path d="M9 13v2M15 13v2"/><path d="M2 14h2M20 14h2"/></svg> IA</span>
+            Resumo do período
+          </h2>
+          <button class="btn-new" id="finance-summary-btn" onclick="generateFinanceSummary()">Gerar resumo</button>
+        </div>
+        <div class="panel-body" style="border-bottom: none;" id="finance-summary-body">
+          <p style="margin:0;color:var(--ink-soft);font-size:0.9rem;">
+            Gere uma leitura em texto dos números acima — o que puxou o resultado do período e o que merece atenção.
+          </p>
+        </div>
       </div>
 
       <div class="tabs-block">
@@ -2083,15 +2211,7 @@
         <button class="btn-secondary" onclick="closeAiModal()">Fechar</button>
         <button class="btn-new" onclick="useAiMessage()">Usar esta mensagem</button>
       </div>
-      <div id="ai-feedback-area" style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--line);">
-        <div class="feedback-row">
-          <span class="feedback-label">Essa sugestão ficou:</span>
-          <button class="feedback-btn otimo" onclick="selectFeedback('OTIMO', this)">Ótima</button>
-          <button class="feedback-btn bom" onclick="selectFeedback('BOM', this)">Boa</button>
-          <button class="feedback-btn ruim" onclick="selectFeedback('RUIM', this)">Ruim</button>
-        </div>
-        <div id="ai-feedback-extra"></div>
-      </div>
+      ${feedbackBlock("Essa sugestão ficou:", true)}
     `;
   }
 
@@ -2100,23 +2220,45 @@
     alert("Rascunho: esta mensagem seria enviada ao paciente:\n\n" + text);
   }
 
+  // Bloco de feedback reutilizável. Pode existir mais de um na mesma tela
+  // (uma resposta do assistente por vez), então o estado é resolvido pelo
+  // container mais próximo do botão, nunca por id global.
+  function feedbackBlock(label, comBorda) {
+    const borda = comBorda
+      ? ' style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--line);"'
+      : ' class="qa-feedback"';
+    return `
+      <div class="feedback-block"${borda}>
+        <div class="feedback-row">
+          <span class="feedback-label">${label}</span>
+          <button class="feedback-btn otimo" onclick="selectFeedback('OTIMO', this)">Ótima</button>
+          <button class="feedback-btn bom" onclick="selectFeedback('BOM', this)">Boa</button>
+          <button class="feedback-btn ruim" onclick="selectFeedback('RUIM', this)">Ruim</button>
+        </div>
+        <div class="feedback-extra"></div>
+      </div>
+    `;
+  }
+
   function selectFeedback(kind, btn) {
-    document.querySelectorAll("#ai-feedback-area .feedback-btn").forEach(el => el.classList.remove("selected"));
+    const bloco = btn.closest(".feedback-block");
+    bloco.querySelectorAll(".feedback-btn").forEach(el => el.classList.remove("selected"));
     btn.classList.add("selected");
 
-    const extra = document.getElementById("ai-feedback-extra");
+    const extra = bloco.querySelector(".feedback-extra");
     if (kind === "RUIM") {
       extra.innerHTML = `
-        <textarea class="feedback-note" placeholder="O que ficou ruim nessa sugestão? (opcional, ajuda a melhorar a IA)"></textarea>
-        <button class="btn-secondary" style="margin-top:0.6rem;" onclick="submitRuimFeedback()">Enviar feedback</button>
+        <textarea class="feedback-note" placeholder="O que ficou ruim nessa resposta? (opcional, ajuda a melhorar a IA)"></textarea>
+        <button class="btn-secondary" style="margin-top:0.6rem;" onclick="submitRuimFeedback(this)">Enviar feedback</button>
       `;
     } else {
       extra.innerHTML = `<div class="feedback-thanks" style="margin-top:0.6rem;">Obrigado pelo feedback!</div>`;
     }
   }
 
-  function submitRuimFeedback() {
-    document.getElementById("ai-feedback-extra").innerHTML = `<div class="feedback-thanks">Obrigado pelo feedback!</div>`;
+  function submitRuimFeedback(btn) {
+    btn.closest(".feedback-extra").innerHTML =
+      `<div class="feedback-thanks">Obrigado pelo feedback!</div>`;
   }
 
   function closeAiModal(event) {
@@ -2124,10 +2266,132 @@
     document.getElementById("ai-modal-overlay").classList.remove("active");
   }
 
+  /* ---------- Assistente de dados (simulado, sem backend) ----------
+     No sistema real a IA escolhe quais consultas rodar e o banco devolve os
+     números; aqui as respostas são fixas só para mostrar o fluxo da tela. */
+  const ROBOT_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1" fill="currentColor" stroke="none"/><path d="M9 13v2M15 13v2"/><path d="M2 14h2M20 14h2"/></svg>`;
+
+  const askSuggestions = [
+    "Quantos pacientes acima de 55 anos atendi nos últimos 2 meses?",
+    "Quantas consultas tive este mês e quantas foram canceladas?",
+    "Qual foi meu faturamento em agosto?",
+    "Quantos pacientes faltaram nas últimas 4 semanas?",
+  ];
+
+  const askAnswers = [
+    {
+      match: /55|idade|anos/i,
+      answer: "Você atendeu <strong>23 pacientes</strong> com 55 anos ou mais entre 26/06 e 26/08/2026. No mesmo período foram 71 pacientes atendidos no total, então essa faixa representa cerca de um terço do seu atendimento.",
+      sources: ["contar_pacientes"],
+    },
+    {
+      match: /cancel|falta|no.?show/i,
+      answer: "Entre 01/08 e 26/08/2026 foram <strong>94 consultas</strong>: 78 concluídas, 9 canceladas e 7 faltas. As faltas ficaram em 7,4% do total — a maior parte concentrada nos horários da última hora da tarde.",
+      sources: ["contar_consultas"],
+    },
+    {
+      match: /consulta|agenda|atendiment/i,
+      answer: "Você teve <strong>94 consultas</strong> entre 01/08 e 26/08/2026: 78 concluídas, 9 canceladas e 7 faltas.",
+      sources: ["contar_consultas"],
+    },
+    {
+      match: /fatur|receita|financeir|ganhei|recebi/i,
+      answer: "Em agosto de 2026 a clínica faturou <strong>R$ 5.940,00</strong>, com R$ 2.140,00 de despesas — saldo de <strong>R$ 3.800,00</strong>. Desse faturamento, R$ 1.500,00 ainda estão a receber.",
+      sources: ["resumo_financeiro"],
+    },
+  ];
+
+  function renderAskSuggestions() {
+    const box = document.getElementById("ask-suggestions");
+    box.innerHTML = askSuggestions.map((s) => `
+      <button type="button" class="suggestion-chip" onclick="useSuggestion(this)">${s}</button>
+    `).join("");
+  }
+
+  function useSuggestion(btn) {
+    const input = document.getElementById("ask-input");
+    input.value = btn.textContent.trim();
+    input.focus();
+  }
+
+  function answerFor(question) {
+    const hit = askAnswers.find((a) => a.match.test(question));
+    if (hit) return hit;
+    return {
+      answer: "Não encontrei esse dado nas informações da clínica. Tente perguntar sobre pacientes, consultas ou financeiro — por exemplo, quantas consultas você teve em um período.",
+      sources: [],
+    };
+  }
+
+  function askAssistant(event) {
+    event.preventDefault();
+    const input = document.getElementById("ask-input");
+    const question = input.value.trim();
+    if (!question) return false;
+
+    document.getElementById("ask-history-panel").style.display = "block";
+    const history = document.getElementById("ask-history");
+
+    const item = document.createElement("div");
+    item.className = "qa-item";
+    item.innerHTML = `
+      <div class="qa-question">${escapeHtml(question)}</div>
+      <div class="ai-loading"><span class="ai-spinner"></span> Consultando os dados da clínica...</div>
+    `;
+    history.prepend(item);
+    input.value = "";
+
+    setTimeout(() => {
+      const { answer, sources } = answerFor(question);
+      const fonte = sources.length
+        ? `<div class="qa-source">Consultou ${sources.map((s) => `<code>${s}</code>`).join(" ")} no banco da clínica</div>`
+        : "";
+      item.innerHTML = `
+        <div class="qa-question">${escapeHtml(question)}</div>
+        <div class="qa-answer">
+          <span class="qa-robot">${ROBOT_SVG}</span>
+          <div>
+            <div>${answer}</div>
+            ${fonte}
+          </div>
+        </div>
+        ${feedbackBlock("Essa resposta ficou:", false)}
+      `;
+    }, 1100);
+
+    return false;
+  }
+
+  /* ---------- Resumo financeiro com IA (simulado) ---------- */
+  function generateFinanceSummary() {
+    const body = document.getElementById("finance-summary-body");
+    const btn = document.getElementById("finance-summary-btn");
+    btn.disabled = true;
+    body.innerHTML = `<div class="ai-loading"><span class="ai-spinner"></span> Analisando os números do período...</div>`;
+
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = "Gerar de novo";
+      body.innerHTML = `
+        <div class="ai-summary-text">
+          <p>O período fechou com <strong>saldo positivo de R$ 3.800,00</strong>: R$ 5.940,00 de entradas contra R$ 2.140,00 de saídas.</p>
+          <ul>
+            <li><strong>R$ 1.500,00 ainda não entraram</strong> — isso é 25% do que foi faturado no período e é o ponto que mais pesa no caixa agora.</li>
+            <li>O ticket médio ficou em <strong>R$ 233,00</strong> para 18 pacientes atendidos.</li>
+            <li>As saídas representam 36% das entradas, uma proporção estável em relação ao que foi lançado no mês.</li>
+          </ul>
+        </div>
+        ${aiDisclaimer(false)}
+        ${feedbackBlock("Esse resumo ficou:", false)}
+      `;
+    }, 1200);
+  }
+
   renderAgenda();
   renderAvailability();
   renderRequests();
   renderPatients();
+  renderAskSuggestions();
   setupSignatureCanvas();
   syncThemeButton();
 </script>

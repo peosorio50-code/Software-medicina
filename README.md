@@ -35,6 +35,8 @@ Toda entidade clínica (`User`, `Patient`, `Appointment`, `AvailabilitySlot`, `S
 - `Appointment`: consulta agendada, vinculada a paciente + médico, com checagem de conflito de horário
 - `AvailabilitySlot`: horário livre que o médico abre na agenda para pacientes solicitarem (AG-09)
 - `SlotRequest`: pedido de um paciente ("levantou a mão") para um horário livre; ao ser confirmado vira um `Appointment`
+- `AiInteraction`: registro de cada uso de IA (tipo, modelo, entrada, saída, tokens e feedback), usado
+  para auditoria e para medir consumo por clínica
 
 ## Agenda pública e solicitação de horário (AG-09)
 
@@ -49,21 +51,49 @@ Toda entidade clínica (`User`, `Patient`, `Appointment`, `AvailabilitySlot`, `S
    leva do paciente). Botões de "Ligar" e "WhatsApp" com o telefone do paciente facilitam o contato para
    avisar da confirmação.
 
+## Recursos de IA
+
+Toda chamada de IA passa por `backend/src/lib/ai.ts`, que escolhe o modelo por tipo de tarefa e grava
+a interação em `AiInteraction` (o que foi pedido, o que a IA respondeu, tokens gastos e o feedback de
+quem usou). Nenhuma feature chama o SDK direto — isso mantém a auditoria completa e permite medir o
+consumo por clínica para os limites de plano.
+
+| Rota | O que faz | Modelo |
+| --- | --- | --- |
+| `POST /ai/appointments/:id/reminder` | Rascunho de mensagem de lembrete de consulta | Haiku (tarefa simples) |
+| `POST /ai/ask` | Assistente de dados: pergunta em português, resposta com números reais do banco | Opus |
+| `POST /ai/finance/summary` | Leitura em texto do resultado financeiro do período | Opus |
+
+**Assistente de dados (`/ai/ask`)**: a IA não lê o banco diretamente — ela escolhe quais *ferramentas*
+chamar (`backend/src/lib/aiTools.ts`) e quem executa a consulta é o Postgres. Duas garantias valem para
+todas as ferramentas:
+
+- O `clinicId` **nunca** vem do modelo: é fixado por closure a partir do JWT (`buildDataTools`). Não
+  existe parâmetro de clínica que a IA (ou a pergunta do usuário) possa manipular.
+- As ferramentas devolvem apenas agregados (contagens, somas), nunca nome de paciente ou conteúdo
+  clínico — dado sensível não entra no prompt nem no registro de auditoria.
+
+O feedback do usuário sobre cada resposta é `OTIMO`/`BOM`/`RUIM` (+ texto livre) via
+`POST /ai/interactions/:id/feedback`. Não é aprovação de decisão clínica — é sinal de qualidade para
+sabermos onde a IA está falhando.
+
 ## Rodando localmente
 
 ### Pré-requisitos
 
 - Node.js 20+
 - PostgreSQL rodando localmente (ou via Docker)
+- Uma `ANTHROPIC_API_KEY` para as features de IA (as demais rotas funcionam sem ela)
 
 ### Backend
 
 ```bash
 cd backend
-cp .env.example .env        # ajuste DATABASE_URL e JWT_SECRET
+cp .env.example .env        # ajuste DATABASE_URL, JWT_SECRET e ANTHROPIC_API_KEY
 npm install
 npm run prisma:migrate      # cria as tabelas
 npm run dev                 # API em http://localhost:3333
+npm test                    # testes (precisam do banco migrado)
 ```
 
 ### Frontend
