@@ -301,13 +301,14 @@
   .sidebar-handle {
     position: absolute;
     top: 50%;
-    left: 222px;
+    left: 218px;
     transform: translateY(-50%);
     transition: left 0.2s ease;
-    width: 20px;
-    height: 44px;
-    border-radius: 6px;
-    border: 1px solid var(--accent);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    padding: 0;
+    border: 1px solid var(--line);
     background: var(--surface);
     color: var(--ink-soft);
     display: flex;
@@ -317,9 +318,9 @@
     z-index: 5;
     box-shadow: var(--shadow);
   }
-  .sidebar-handle:hover { color: var(--accent); }
+  .sidebar-handle:hover { color: var(--accent); border-color: var(--accent); }
   .sidebar-handle svg { transition: transform 0.2s ease; }
-  .sidebar-collapsed .sidebar-handle { left: 0; }
+  .sidebar-collapsed .sidebar-handle { left: 6px; }
   .sidebar-collapsed .sidebar-handle svg { transform: rotate(180deg); }
 
   .sidebar-collapsed .main-inner { margin: 0 auto; }
