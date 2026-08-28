@@ -69,9 +69,59 @@ resposta que o outro lado não foi alterado**.
   projeto — use-os em branches, commits e testes sempre que a mudança implementar ou alterar um
   requisito listado em `docs/backlog.md`.
 
+## Regras de arquitetura
+
+Estas quatro regras são estruturais: valem para qualquer código novo e **não mudam sem
+pedido explícito do dono do produto**. Elas existem para manter uma propriedade específica —
+o servidor é um produto independente da tela, capaz de atender também um app de celular ou
+outro cliente qualquer sem reescrita.
+
+1. **O backend só responde JSON.** Nenhuma rota renderiza HTML, serve arquivo estático ou
+   monta tela. Sem motor de template (EJS, Pug, Handlebars) no projeto.
+2. **Regra de negócio, validação e verificação de permissão ficam no backend.** O frontend
+   nunca é a única barreira: validar no formulário é conveniência para o usuário, não
+   segurança. Toda entrada é revalidada no servidor (Zod) e toda autorização é decidida lá.
+3. **O frontend fala com o servidor apenas por `frontend/src/api.ts`.** Nenhum `fetch`,
+   `axios` ou `EventSource` solto em componente ou página. O endereço do servidor e o
+   cabeçalho de autorização são montados num lugar só.
+4. **Autenticação por token no header (`Authorization: Bearer`), nunca por cookie de sessão.**
+   É o que permite que um cliente não-navegador (app de celular) use a mesma API sem adaptação.
+
+Ver também, em **Regras invioláveis**, a regra do `clinicId` — ela é a contrapartida de
+multi-tenancy destas quatro.
+
+### Onde o código ainda não cumpre (estado em 2026-08-28)
+
+Registrado aqui porque uma regra escrita como se já valesse induz ao erro de quem lê depois:
+
+- **Regra 2, parte de permissão — não vale hoje.** A checagem de papel (`ADMIN`/`DOCTOR`/`STAFF`)
+  existe só em `backend/src/routes/users.ts` e `backend/src/routes/clinic.ts`. Nos outros 11
+  grupos de rotas (agenda, pacientes, financeiro, documentos, notas, IA) não há verificação
+  alguma: qualquer usuário autenticado da clínica passa. Não é o frontend segurando sozinho —
+  é ausência de barreira. O isolamento **entre** clínicas continua íntegro; falta a separação
+  **dentro** da clínica. Fechar isso é trabalho espalhado por 11 arquivos, não um ajuste pontual.
+- **Regra 3 — uma violação conhecida.** `frontend/src/pages/Settings.tsx` chama `fetch` direto
+  em `/clinic/export`, remontando URL e cabeçalho por conta própria. A causa é uma limitação
+  do `api.ts`: ele só sabe tratar JSON e não tem como pedir um arquivo para download. Enquanto
+  isso não for resolvido, toda funcionalidade nova de exportar ou baixar documento tende a
+  repetir a violação — a correção é dar ao `api.ts` um método de download, não abrir exceção.
+
+As regras 1 e 4 são cumpridas integralmente hoje.
+
 ## Regras invioláveis
 
 - Nenhuma rota executa exclusão física de dado clínico (paciente, consulta, evolução).
+  **Hoje esta regra é violada** (levantamento de 2026-08-28). Há `prisma.*.delete()` — apagar
+  de verdade, sem volta — nestas rotas, e as três primeiras são exatamente o que a regra
+  nomeia:
+    - `patients.ts` → `Patient` ("paciente")
+    - `appointments.ts` → `Appointment` ("consulta")
+    - `documents.ts` → `PatientDocument` (documento emitido para um paciente)
+    - `invoices.ts`, `finance.ts` (categoria, recorrência e transação) → não é dado clínico,
+      mas tem dever de retenção fiscal; decidir caso a caso.
+    - `documentTemplates.ts` e `users.ts` → modelo e usuário, fora do escopo desta regra.
+  Corrigir exige inativação lógica no schema (campo de arquivamento + filtro nas consultas),
+  não só trocar o verbo da rota.
 - Nenhuma escrita em entidade clínica ocorre sem registro em auditoria (a trilha de auditoria ainda
   precisa ser implementada — ver `NF-SEC-04` e `ADM` em `docs/backlog.md`).
 - O `clinicId` nunca vem do corpo da requisição; é sempre resolvido do JWT autenticado
